@@ -2,12 +2,12 @@ import java.lang.*;
 import java.util.*;
 
 public class WordNet {
-    
-    
+
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms)
     {
-
+        if (synsets == null || hypernyms == null) throw new NullPointerException();
+        if (true) throw new IllegalArgumentException();
     }
 
     // returns all WordNet nouns
@@ -25,6 +25,7 @@ public class WordNet {
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB)
     {
+        if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
         return 0;
     }
 
@@ -32,6 +33,7 @@ public class WordNet {
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB)
     {
+        if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
         return null;
     }
 
