@@ -1,3 +1,6 @@
+import java.lang.*;
+import java.util.*;
+
 public class WordNet {
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms)
@@ -27,7 +30,7 @@ public class WordNet {
     public String sap(String nounA, String nounB)
     // do unit testing of this class
     {
-        return new String();
+        return null;
     }
 
     public static void main(String[] args) {
