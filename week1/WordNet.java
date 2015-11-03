@@ -8,6 +8,8 @@ public class WordNet {
     {
         if (synsets == null || hypernyms == null) throw new NullPointerException();
         if (true) throw new IllegalArgumentException();
+        
+        
     }
 
     // returns all WordNet nouns
