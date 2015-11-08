@@ -24,9 +24,16 @@ public class WordNet {
             String lineNouns[] = line[1].split(" ");//0 is index, 1 is nouns, 2 is defination
             int index = Integer.parseInt(line[0]);
             for (int i = 0; i < lineNouns.length; i++) {
-                LinkedList list = nouns.get(lineNouns[i]);
-                list.add(index);
-                nouns.put(lineNouns[i], list); // key is noun, value is index
+                if (nouns.contains(lineNouns[i])) {
+                    LinkedList list = nouns.get(lineNouns[i]);
+                    list.add(index);
+                    nouns.put(lineNouns[i], list); // key is noun, value is list of index
+                }
+                else {
+                    LinkedList list = new LinkedList<Integer>();
+                    list.add(index);
+                    nouns.put(lineNouns[i], list);
+                }
             }
             definitions.put(index, line[2]); //do I need this?
         }
@@ -71,8 +78,7 @@ public class WordNet {
     public int distance(String nounA, String nounB)
     {
         if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
-        
-        
+
         return 0;
     }
 
@@ -82,14 +88,16 @@ public class WordNet {
     {
         if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
 
-        StdOut.println(nouns.get(nounA));
-//         for (int i : nouns.get(nounA)) {
-//         
-//         }
+        //only for testing
+        for (int i : nouns.get(nounA)) {
+            StdOut.println(nounA + " " + i);
+        }
+        for (int i : nouns.get(nounB)) {
+            StdOut.println(nounB + " " + i);
+        }
         
-        //StdOut.println(nouns.get(nounB));
         //SAP sap = new SAP(nouns.get(nounA), nouns.get(nounB));
-        
+
         return null;
     }
 
@@ -107,8 +115,8 @@ public class WordNet {
         StdOut.println("b is " + wordnet.isNoun("b"));
         StdOut.println("C-reactive_protein is " + wordnet.isNoun("C-reactive_protein"));
         StdOut.println("whopper is " + wordnet.isNoun("whopper"));
-        
+
         //test sap
-        wordnet.sap("thing", "thing"); // 83 and 84
+        wordnet.sap("thing", "thromboplastin"); // 83 and 84
     }
 }
