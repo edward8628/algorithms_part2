@@ -50,9 +50,9 @@ public class WordNet {
 
         }
     }
-    
+
     private void validateIndex (String str) {
-        
+
     }
     // returns all WordNet nouns
     public Iterable<String> nouns()
@@ -63,7 +63,7 @@ public class WordNet {
     // is the word a WordNet noun?
     public boolean isNoun(String word)
     {
-        return false;
+        return nouns.contains(word);
     }
 
     // distance between nounA and nounB (defined below)
@@ -84,11 +84,18 @@ public class WordNet {
 
     // do unit testing of this class
     public static void main(String[] args) {
-        //read in as string
         WordNet wordnet = new WordNet(args[0], args[1]);
         //test case?
+
+        //test iterable
         for (String noun : wordnet.nouns()) {
             StdOut.println(noun);
         }
+
+        //test isNoun
+        StdOut.println("a is " + wordnet.isNoun("a"));
+        StdOut.println("b is " + wordnet.isNoun("b"));
+        StdOut.println("C-reactive_protein is " + wordnet.isNoun("C-reactive_protein"));
+        StdOut.println("whopper is " + wordnet.isNoun("whopper"));
     }
 }
