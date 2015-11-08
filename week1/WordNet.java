@@ -36,9 +36,10 @@ public class WordNet {
         while (in.hasNextLine()) {
             this.graph = new Digraph(size);
             String[] temp = in.readLine().split(",");
-            //some lines have mnore than 2 number
             for (int i = 1; i < temp.length; i++) {
                 try {
+                    //what the hell root?
+                    //what if it is not number?
                     graph.addEdge(Integer.parseInt(temp[0]), Integer.parseInt(temp[i])); //v->w
                 } catch (IndexOutOfBoundsException e) {
                     StdOut.println(e);
@@ -49,10 +50,14 @@ public class WordNet {
 
         }
     }
+    
+    private void validateIndex (String str) {
+        
+    }
     // returns all WordNet nouns
     public Iterable<String> nouns()
     {
-        return null;
+        return nouns.keys();
     }
 
     // is the word a WordNet noun?
@@ -81,5 +86,9 @@ public class WordNet {
     public static void main(String[] args) {
         //read in as string
         WordNet wordnet = new WordNet(args[0], args[1]);
+        //test case?
+        for (String noun : wordnet.nouns()) {
+            StdOut.println(noun);
+        }
     }
 }
