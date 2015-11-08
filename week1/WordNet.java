@@ -2,9 +2,10 @@ import java.lang.*;
 import java.util.*;
 
 public class WordNet {
+    SAP sap;
     final Digraph graph;
     final SeparateChainingHashST<String, LinkedList<Integer>> nouns;
-    final HashMap<Integer, String> definitions; // do I need this?
+    final ArrayList<String> orderByIndex;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms)
@@ -14,15 +15,16 @@ public class WordNet {
         int size = 0;   //for V in digraph 
         //but I can get rid of this and use table.size?
         nouns = new SeparateChainingHashST<String, LinkedList<Integer>>();
-        definitions = new HashMap<Integer, String>();
+        orderByIndex = new ArrayList<String>();
 
         //process of reading in synsets as simple hash table
         In in = new In(synsets);
         while (in.hasNextLine()) {
             size++;
-            String line[] = in.readLine().split(",");//read in line
+            String line[] = in.readLine().split(",");//read in line and split by comma
             String lineNouns[] = line[1].split(" ");//0 is index, 1 is nouns, 2 is defination
             int index = Integer.parseInt(line[0]);
+            orderByIndex.add(line[1]);
             for (int i = 0; i < lineNouns.length; i++) {
                 if (nouns.contains(lineNouns[i])) {
                     LinkedList list = nouns.get(lineNouns[i]);
@@ -35,33 +37,35 @@ public class WordNet {
                     nouns.put(lineNouns[i], list);
                 }
             }
-            definitions.put(index, line[2]); //do I need this?
         }
 
-        this.graph = new Digraph(size);
-
         //process of reading in hypernyms as digraph
+        this.graph = new Digraph(size);
         in = new In(hypernyms);
         while (in.hasNextLine()) {
             String[] temp = in.readLine().split(",");
             for (int i = 1; i < temp.length; i++) {
                 try {
-                    //what the hell root?
+                    //what the hell is root?
                     //what if it is not number?
                     graph.addEdge(Integer.parseInt(temp[0]), Integer.parseInt(temp[i])); //v->w
                 } catch (IndexOutOfBoundsException e) {
-                    StdOut.println(e);
                     //if the input does not correspond to a rooted DAG
+                    StdOut.println(e); // but is this right?
                     throw new IllegalArgumentException();
                 }
             }
-
         }
+        
+        
+        //save the graph as 
+        sap = new SAP(this.graph);
     }
 
     private void validateIndex (String str) {
-
+        //do I need this for try and catch?
     }
+
     // returns all WordNet nouns
     public Iterable<String> nouns()
     {
@@ -78,8 +82,7 @@ public class WordNet {
     public int distance(String nounA, String nounB)
     {
         if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
-
-        return 0;
+        return sap.length(nouns.get(nounA), nouns.get(nounB));
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
@@ -87,18 +90,11 @@ public class WordNet {
     public String sap(String nounA, String nounB)
     {
         if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
-
-        //only for testing
-        for (int i : nouns.get(nounA)) {
-            StdOut.println(nounA + " " + i);
-        }
-        for (int i : nouns.get(nounB)) {
-            StdOut.println(nounB + " " + i);
-        }
         
-        //SAP sap = new SAP(nouns.get(nounA), nouns.get(nounB));
-
-        return null;
+        int ancestor = sap.ancestor(nouns.get(nounA), nouns.get(nounB));
+        if (ancestor == -1) return null; // no such path
+        
+        return orderByIndex.get(ancestor);
     }
 
     // do unit testing of this class
