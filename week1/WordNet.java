@@ -2,9 +2,9 @@ import java.lang.*;
 import java.util.*;
 
 public class WordNet {
-    Digraph graph;
-    SeparateChainingHashST<String, Integer> nouns;
-    HashMap<Integer, String> definitions; // do I need this?
+    final Digraph graph;
+    final SeparateChainingHashST<String, LinkedList<Integer>> nouns;
+    final HashMap<Integer, String> definitions; // do I need this?
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms)
@@ -13,7 +13,7 @@ public class WordNet {
 
         int size = 0;   //for V in digraph 
         //but I can get rid of this and use table.size?
-        nouns = new SeparateChainingHashST<String, Integer>();
+        nouns = new SeparateChainingHashST<String, LinkedList<Integer>>();
         definitions = new HashMap<Integer, String>();
 
         //process of reading in synsets as simple hash table
@@ -24,9 +24,11 @@ public class WordNet {
             String lineNouns[] = line[1].split(" ");//0 is index, 1 is nouns, 2 is defination
             int index = Integer.parseInt(line[0]);
             for (int i = 0; i < lineNouns.length; i++) {
-                nouns.put(lineNouns[i], index); // key is noun, value is index
+                LinkedList list = nouns.get(lineNouns[i]);
+                list.add(index);
+                nouns.put(lineNouns[i], list); // key is noun, value is index
             }
-            definitions.put(index, line[2]);
+            definitions.put(index, line[2]); //do I need this?
         }
 
         this.graph = new Digraph(size);
@@ -34,7 +36,6 @@ public class WordNet {
         //process of reading in hypernyms as digraph
         in = new In(hypernyms);
         while (in.hasNextLine()) {
-            this.graph = new Digraph(size);
             String[] temp = in.readLine().split(",");
             for (int i = 1; i < temp.length; i++) {
                 try {
@@ -70,6 +71,8 @@ public class WordNet {
     public int distance(String nounA, String nounB)
     {
         if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
+        
+        
         return 0;
     }
 
@@ -79,13 +82,20 @@ public class WordNet {
     {
         if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
 
+        StdOut.println(nouns.get(nounA));
+//         for (int i : nouns.get(nounA)) {
+//         
+//         }
+        
+        //StdOut.println(nouns.get(nounB));
+        //SAP sap = new SAP(nouns.get(nounA), nouns.get(nounB));
+        
         return null;
     }
 
     // do unit testing of this class
     public static void main(String[] args) {
         WordNet wordnet = new WordNet(args[0], args[1]);
-        //test case?
 
         //test iterable
         for (String noun : wordnet.nouns()) {
@@ -97,5 +107,8 @@ public class WordNet {
         StdOut.println("b is " + wordnet.isNoun("b"));
         StdOut.println("C-reactive_protein is " + wordnet.isNoun("C-reactive_protein"));
         StdOut.println("whopper is " + wordnet.isNoun("whopper"));
+        
+        //test sap
+        wordnet.sap("thing", "thing"); // 83 and 84
     }
 }
