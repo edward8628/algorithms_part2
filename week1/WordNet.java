@@ -3,23 +3,30 @@ import java.util.*;
 
 public class WordNet {
     Digraph graph;
+    SeparateChainingHashST<String, Integer> nouns;
+    HashMap<Integer, String> definitions; // do I need this?
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms)
     {
         if (synsets == null || hypernyms == null) throw new NullPointerException();
-        //if (true) throw new IllegalArgumentException();
-        //use split to separate comma?semicolon?or space
-        //use Integer.parseInt() to parse string as int
-        //readline to parse text string
 
-        int size = 0;   //for V in digraph //but I can get rid of this and use table.size
+        int size = 0;   //for V in digraph 
+        //but I can get rid of this and use table.size?
+        nouns = new SeparateChainingHashST<String, Integer>();
+        definitions = new HashMap<Integer, String>();
 
-        //process of reading in synsets as simple table
+        //process of reading in synsets as simple hash table
         In in = new In(synsets);
         while (in.hasNextLine()) {
             size++;
-            in.readLine();
+            String line[] = in.readLine().split(",");//read in line
+            String lineNouns[] = line[1].split(" ");//0 is index, 1 is nouns, 2 is defination
+            int index = Integer.parseInt(line[0]);
+            for (int i = 0; i < lineNouns.length; i++) {
+                nouns.put(lineNouns[i], index); // key is noun, value is index
+            }
+            definitions.put(index, line[2]);
         }
 
         this.graph = new Digraph(size);
@@ -31,14 +38,17 @@ public class WordNet {
             String[] temp = in.readLine().split(",");
             //some lines have mnore than 2 number
             for (int i = 1; i < temp.length; i++) {
-                graph.addEdge(Integer.parseInt(temp[0]), Integer.parseInt(temp[i])); //v->w
+                try {
+                    graph.addEdge(Integer.parseInt(temp[0]), Integer.parseInt(temp[i])); //v->w
+                } catch (IndexOutOfBoundsException e) {
+                    StdOut.println(e);
+                    //if the input does not correspond to a rooted DAG
+                    throw new IllegalArgumentException();
+                }
             }
 
-            
         }
-
     }
-
     // returns all WordNet nouns
     public Iterable<String> nouns()
     {
