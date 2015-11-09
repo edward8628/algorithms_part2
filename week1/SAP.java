@@ -6,22 +6,20 @@ public class SAP {
     public SAP(Digraph G)
     {
         if (G == null) throw new java.lang.NullPointerException();
-        //if () throw new java.lang.IndexOutOfBoundsException(); //if vertex is not between 0 and G.V() - 1.
         this.G = new Digraph(G); // new G?
         this.cache = new int[4]; //0=v, 1=w, 2=ancestor,3=length
     }
 
-    // length of shortest ancestral path between v and w; -1 if no such path
+    // length of shortest ancestral path between v and w;
     public int length(int v, int w)
     {
         ancestor(v, w);
         return cache[3];
     }
 
-    // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
+    // a common ancestor of v and w that participates in a shortest ancestral path;
     public int ancestor(int v, int w)
     {
-        //if () throw new java.lang.NullPointerException();
         if (v < 0 || v > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
         if (w < 0 || w > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
         if (cache[0]==v && cache[1]==w || cache[1]==v && cache[0]==w) return cache[2];
@@ -29,7 +27,7 @@ public class SAP {
         //read in G again and again?
         BreadthFirstDirectedPaths bfs = new BreadthFirstDirectedPaths(this.G, w);
         int counter = 0;
-        
+
         if (bfs.hasPathTo(v)) {//ancestor is itself
             cache[0] = v; //does this work?
             cache[1] = w;
@@ -51,7 +49,7 @@ public class SAP {
                 v = i;
             }
         }
-        
+
         //has no path
         cache[0] = v;
         cache[1] = w;
@@ -84,11 +82,23 @@ public class SAP {
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
 
-        int v = Integer.parseInt(args[1]);
-        int w = Integer.parseInt(args[2]);
+        //int v = Integer.parseInt(args[1]);
+        //int w = Integer.parseInt(args[2]);
 
-        StdOut.println("legnth is " + sap.length(v,w));
-        StdOut.println("ancestor is " + sap.ancestor(v,w));
-
+        //test single length and ancestor
+        for (int v = G.V()-1; v >= 0; v--) {
+            for (int w = G.V()-1; w >= 0; w--) {
+                StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
+                StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
+            }
+        }
+        int v = 3;
+        int w = 11; 
+        StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
+        StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
+        v = 11;
+        w = 3; 
+        StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
+        StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
     }
 }
