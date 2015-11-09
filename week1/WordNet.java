@@ -1,5 +1,5 @@
-import java.lang.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class WordNet {
     SAP sap;
@@ -10,10 +10,12 @@ public class WordNet {
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms)
     {
-        if (synsets == null || hypernyms == null) throw new NullPointerException();
+        if (synsets == null || hypernyms == null) throw new java.lang.NullPointerException();
 
-        int size = 0;   //for V in digraph 
         //but I can get rid of this and use table.size?
+        int size = 0;   //for V in digraph 
+        //I need to check for DAG
+        //I need to check for rooted
         nouns = new SeparateChainingHashST<String, LinkedList<Integer>>();
         orderByIndex = new ArrayList<String>();
 
@@ -56,13 +58,12 @@ public class WordNet {
                 }
             }
         }
-        
-        
-        //save the graph as 
+
+        //catch graph, ok here?
         sap = new SAP(this.graph);
     }
 
-    private void validateIndex (String str) {
+    private void validateGraph (Digraph graph) {
         //do I need this for try and catch?
     }
 
@@ -81,7 +82,7 @@ public class WordNet {
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB)
     {
-        if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
+        if (!isNoun(nounA) || !isNoun(nounB)) throw new java.lang.IllegalArgumentException();
         return sap.length(nouns.get(nounA), nouns.get(nounB));
     }
 
@@ -89,11 +90,11 @@ public class WordNet {
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB)
     {
-        if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
-        
+        if (!isNoun(nounA) || !isNoun(nounB)) throw new java.lang.IllegalArgumentException();
+
         int ancestor = sap.ancestor(nouns.get(nounA), nouns.get(nounB));
         if (ancestor == -1) return null; // no such path
-        
+
         return orderByIndex.get(ancestor);
     }
 
@@ -114,5 +115,9 @@ public class WordNet {
 
         //test sap
         wordnet.sap("thing", "thromboplastin"); // 83 and 84
+
+        //test length
+        //wordnet.distance();
     }
+
 }
