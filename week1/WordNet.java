@@ -2,10 +2,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class WordNet {
-    SAP sap;
-    final Digraph graph;
-    final SeparateChainingHashST<String, LinkedList<Integer>> nouns;
-    final ArrayList<String> orderByIndex;
+    private SAP sap;
+    private final Digraph graph;
+    private final SeparateChainingHashST<String, LinkedList<Integer>> nouns;
+    private final ArrayList<String> orderByIndex;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms)
@@ -95,10 +95,10 @@ public class WordNet {
     public static void main(String[] args) {
         WordNet wordnet = new WordNet(args[0], args[1]);
 
-        //test iterable
-        for (String noun : wordnet.nouns()) {
-            StdOut.println(noun);
-        }
+        //         //test iterable
+        //         for (String noun : wordnet.nouns()) {
+        //             StdOut.println(noun);
+        //         }
 
         //test isNoun
         StdOut.println("a is " + wordnet.isNoun("a"));
@@ -107,10 +107,10 @@ public class WordNet {
         StdOut.println("whopper is " + wordnet.isNoun("whopper"));
 
         //test sap
-        wordnet.sap("thing", "thromboplastin"); // 83 and 84
+        StdOut.println(wordnet.sap("zymase", "whacker")); // 83 and 84
 
         //test length
-        //wordnet.distance();
+        StdOut.println(wordnet.distance("zymase", "whacker"));
     }
 
 }
