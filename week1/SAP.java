@@ -111,7 +111,7 @@ public class SAP {
     // a common ancestor that participates in shortest ancestral path;
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w)
     {
-        //what about catch?
+        //what about cache?
         length(v, w);
         return cacheIterable[1];
     }

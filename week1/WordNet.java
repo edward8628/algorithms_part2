@@ -12,8 +12,6 @@ public class WordNet {
     {
         if (synsets == null || hypernyms == null) throw new java.lang.NullPointerException();
 
-        //but I can get rid of this and use table.size?
-        int size = 0;   //for V in digraph 
         //I need to check for DAG
         //I need to check for rooted
         nouns = new SeparateChainingHashST<String, LinkedList<Integer>>();
@@ -22,16 +20,15 @@ public class WordNet {
         //process of reading in synsets as simple hash table
         In in = new In(synsets);
         while (in.hasNextLine()) {
-            size++;
-            String line[] = in.readLine().split(",");//read in line and split by comma
-            String lineNouns[] = line[1].split(" ");//0 is index, 1 is nouns, 2 is defination
+            String line[] = in.readLine().split(",");
+            String lineNouns[] = line[1].split(" ");//0=index, 1=nouns, 2=defination
             int index = Integer.parseInt(line[0]);
-            orderByIndex.add(line[1]);
+            orderByIndex.add(line[1]);//key=index, value=noun
             for (int i = 0; i < lineNouns.length; i++) {
                 if (nouns.contains(lineNouns[i])) {
                     LinkedList list = nouns.get(lineNouns[i]);
                     list.add(index);
-                    nouns.put(lineNouns[i], list); // key is noun, value is list of index
+                    nouns.put(lineNouns[i], list); // key=noun, value=list of index
                 }
                 else {
                     LinkedList list = new LinkedList<Integer>();
@@ -42,13 +39,12 @@ public class WordNet {
         }
 
         //process of reading in hypernyms as digraph
-        this.graph = new Digraph(size);
+        this.graph = new Digraph(orderByIndex.size());
         in = new In(hypernyms);
         while (in.hasNextLine()) {
             String[] temp = in.readLine().split(",");
             for (int i = 1; i < temp.length; i++) {
                 try {
-                    //what the hell is root?
                     //what if it is not number?
                     graph.addEdge(Integer.parseInt(temp[0]), Integer.parseInt(temp[i])); //v->w
                 } catch (IndexOutOfBoundsException e) {
@@ -59,7 +55,6 @@ public class WordNet {
             }
         }
 
-        //catch graph, ok here?
         sap = new SAP(this.graph);
     }
 
@@ -91,10 +86,8 @@ public class WordNet {
     public String sap(String nounA, String nounB)
     {
         if (!isNoun(nounA) || !isNoun(nounB)) throw new java.lang.IllegalArgumentException();
-
         int ancestor = sap.ancestor(nouns.get(nounA), nouns.get(nounB));
         if (ancestor == -1) return null; // no such path
-
         return orderByIndex.get(ancestor);
     }
 
