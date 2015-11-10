@@ -12,8 +12,8 @@ public class WordNet {
     {
         if (synsets == null || hypernyms == null) throw new java.lang.NullPointerException();
 
-        //I need to check for DAG
-        //I need to check for rooted
+        //I need to check for DAG in sap?
+        //I need to check for rooted, a single hyper for each vertex
         nouns = new SeparateChainingHashST<String, LinkedList<Integer>>();
         orderByIndex = new ArrayList<String>();
 
