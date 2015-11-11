@@ -10,10 +10,9 @@ public class WordNet {
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms)
     {
-        if (synsets == null || hypernyms == null) throw new java.lang.NullPointerException();
+        if (synsets == null || hypernyms == null) 
+            throw new java.lang.NullPointerException();
 
-        //I need to check for DAG in sap?
-        //I need to check for rooted, a single hyper for each vertex
         nouns = new SeparateChainingHashST<String, LinkedList<Integer>>();
         orderByIndex = new ArrayList<String>();
 
@@ -21,14 +20,14 @@ public class WordNet {
         In in = new In(synsets);
         while (in.hasNextLine()) {
             String line[] = in.readLine().split(",");
-            String lineNouns[] = line[1].split(" ");//0=index, 1=nouns, 2=defination
+            String lineNouns[] = line[1].split(" ");//0=index,1=nouns,2=defination
             int index = Integer.parseInt(line[0]);
             orderByIndex.add(line[1]);//key=index, value=noun
             for (int i = 0; i < lineNouns.length; i++) {
                 if (nouns.contains(lineNouns[i])) {
                     LinkedList list = nouns.get(lineNouns[i]);
                     list.add(index);
-                    nouns.put(lineNouns[i], list); // key=noun, value=list of index
+                    nouns.put(lineNouns[i], list); //key=noun,value=list of index
                 }
                 else {
                     LinkedList list = new LinkedList<Integer>();
@@ -43,23 +42,35 @@ public class WordNet {
         in = new In(hypernyms);
         while (in.hasNextLine()) {
             String[] temp = in.readLine().split(",");
+            int v = Integer.parseInt(temp[0]);
+            int w = Integer.parseInt(temp[1]);
             for (int i = 1; i < temp.length; i++) {
-                try {
-                    //what if it is not number?
-                    graph.addEdge(Integer.parseInt(temp[0]), Integer.parseInt(temp[i])); //v->w
-                } catch (IndexOutOfBoundsException e) {
-                    //if the input does not correspond to a rooted DAG
-                    StdOut.println(e); // but is this right?
-                    throw new IllegalArgumentException();
-                }
+                graph.addEdge(v, w); //v->w
             }
         }
 
+        isRootedDAG(this.graph);
         sap = new SAP(this.graph);
     }
 
-    private void validateGraph (Digraph graph) {
-        //do I need this for try and catch?
+    private void isRootedDAG(Digraph graph) {
+        DirectedCycle cycleFinder = new DirectedCycle(graph);
+        if (cycleFinder.hasCycle()) {
+            throw new java.lang.IllegalArgumentException();
+        }
+        int numberOfZeroOut = 0;
+        for (int i = 0; i < graph.V(); i++) {
+            int count = 0;
+            for (int adjNode : graph.adj(i)) {
+                count++;
+            }
+            if (count == 0) {
+                numberOfZeroOut++;
+            }
+            if (numberOfZeroOut > 1) {
+                throw new java.lang.IllegalArgumentException();
+            }
+        }
     }
 
     // returns all WordNet nouns
@@ -77,15 +88,18 @@ public class WordNet {
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB)
     {
-        if (!isNoun(nounA) || !isNoun(nounB)) throw new java.lang.IllegalArgumentException();
+        if (!isNoun(nounA) || !isNoun(nounB)) 
+            throw new java.lang.IllegalArgumentException();
         return sap.length(nouns.get(nounA), nouns.get(nounB));
     }
 
-    // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
+    // a synset (second field of synsets.txt) that is the common 
+    // ancestor of nounA and nounB
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB)
     {
-        if (!isNoun(nounA) || !isNoun(nounB)) throw new java.lang.IllegalArgumentException();
+        if (!isNoun(nounA) || !isNoun(nounB)) 
+            throw new java.lang.IllegalArgumentException();
         int ancestor = sap.ancestor(nouns.get(nounA), nouns.get(nounB));
         if (ancestor == -1) return null; // no such path
         return orderByIndex.get(ancestor);
