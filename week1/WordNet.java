@@ -56,7 +56,7 @@ public class WordNet {
     private void isRootedDAG(Digraph graph) {
         DirectedCycle cycleFinder = new DirectedCycle(graph);
         if (cycleFinder.hasCycle()) {
-            throw new java.lang.IllegalArgumentException();
+            throw new java.lang.IllegalArgumentException("has a cycle");
         }
         int numberOfZeroOut = 0;
         for (int i = 0; i < graph.V(); i++) {
@@ -68,7 +68,7 @@ public class WordNet {
                 numberOfZeroOut++;
             }
             if (numberOfZeroOut > 1) {
-                throw new java.lang.IllegalArgumentException();
+                throw new java.lang.IllegalArgumentException("multiple roots");
             }
         }
     }
