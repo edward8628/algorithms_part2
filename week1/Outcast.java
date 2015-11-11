@@ -1,10 +1,27 @@
 public class Outcast {
-    public Outcast(WordNet wordnet) // constructor takes a WordNet object 
+    WordNet wordnet;
+
+    // constructor takes a WordNet object 
+    public Outcast(WordNet wordnet)
     {
+        this.wordnet = wordnet;
     }
 
-    public String outcast(String[]nouns) //given an array of WordNet nouns,return an outcast 
+    //given an array of WordNet nouns,return an outcast 
+    public String outcast(String[] nouns)
     {
+        int length = nouns.length;
+        int[] dist = new int[length];
+        int worst = 0;
+        for (int i = 0; i < length; i++) {
+            for (String noun : nouns) {
+                dist[i] += wordnet.distance(nouns[i], noun);
+            }
+            if (dist[worst] < dist[i]) {
+                worst = i;
+            }
+        }
+
         return null;
     }
 
