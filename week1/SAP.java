@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.*;
+
 public class SAP {
     private Digraph G;
     private int[] cache;

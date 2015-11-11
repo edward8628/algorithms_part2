@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
+import edu.princeton.cs.algs4.*;
 
 public class WordNet {
     private SAP sap;
