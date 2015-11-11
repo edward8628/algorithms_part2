@@ -42,10 +42,9 @@ public class WordNet {
         in = new In(hypernyms);
         while (in.hasNextLine()) {
             String[] temp = in.readLine().split(",");
-            int v = Integer.parseInt(temp[0]);
-            int w = Integer.parseInt(temp[1]);
             for (int i = 1; i < temp.length; i++) {
-                graph.addEdge(v, w); //v->w
+                //v->w
+                graph.addEdge(Integer.parseInt(temp[0]), Integer.parseInt(temp[i]));
             }
         }
 

@@ -22,7 +22,7 @@ public class Outcast {
             }
         }
 
-        return null;
+        return nouns[worst];
     }
 
     public static void main(String[] args) {
