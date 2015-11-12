@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.SeparateChainingHashST;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.DirectedCycle;
 
 public class WordNet {
     private SAP sap;
@@ -114,6 +118,7 @@ public class WordNet {
         //             StdOut.println(noun);
         //         }
 
+        //i need to make a loop to test with all data set
         //test isNoun
         StdOut.println("a is " + wordnet.isNoun("a"));
         StdOut.println("b is " + wordnet.isNoun("b"));

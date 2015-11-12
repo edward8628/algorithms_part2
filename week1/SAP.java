@@ -1,4 +1,7 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
 
 public class SAP {
     private Digraph G;
@@ -64,6 +67,7 @@ public class SAP {
     // length of shortest ancestral between any vertex in v and any vertex in w;
     public int length(Iterable<Integer> v, Iterable<Integer> w)
     {
+        StdOut.println("length or ancestor iterable call");
         if (v == null || w == null) throw new java.lang.NullPointerException();
         for (int i : v) {
             if (i < 0 || i > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
@@ -126,19 +130,12 @@ public class SAP {
         SAP sap = new SAP(G);
 
         //test single length and ancestor
-        for (int v = G.V()-1; v >= 0; v--) {
-            for (int w = G.V()-1; w >= 0; w--) {
+        for (int v = 0; v < G.V(); v++) {
+            for (int w = 0; w < G.V(); w++){
                 StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
                 StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
             }
         }
-        int v = 3;
-        int w = 11; 
-        StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
-        StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
-        v = 11;
-        w = 3; 
-        StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
-        StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
+
     }
 }
