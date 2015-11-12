@@ -31,6 +31,10 @@ public class SAP {
         if (v < 0 || v > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
         if (w < 0 || w > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
         if (cache[0] == v && cache[1] == w || cache[1] == v && cache[0] == w) return cache[2];
+        cache[0] = v;
+        cache[1] = w;
+        cache[2] = -1;
+        cache[3] = -1;
 
         //read in G again and again?
         BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(this.G, v);
@@ -42,19 +46,15 @@ public class SAP {
             int i = q.dequeue();
             for (int j : this.G.adj(i)) q.enqueue(j);
             if (bfsW.hasPathTo(i)) {
-                cache[0] = v;
-                cache[1] = w;
-                cache[2] = i;
-                cache[3] = bfsV.distTo(i) + bfsW.distTo(i);
-                return cache[2];
+                int length = bfsV.distTo(i) + bfsW.distTo(i);
+                if (cache[3] == -1 || length < cache[3]) {
+                    cache[0] = v;
+                    cache[1] = w;
+                    cache[2] = i;
+                    cache[3] = length;
+                }
             }
         }
-
-        //has no path
-        cache[0] = v;
-        cache[1] = w;
-        cache[2] = -1;
-        cache[3] = -1;
         return cache[2];
     }
 
