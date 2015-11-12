@@ -67,7 +67,6 @@ public class SAP {
     // length of shortest ancestral between any vertex in v and any vertex in w;
     public int length(Iterable<Integer> v, Iterable<Integer> w)
     {
-        StdOut.println("length or ancestor iterable call");
         if (v == null || w == null) throw new java.lang.NullPointerException();
         for (int i : v) {
             if (i < 0 || i > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
@@ -97,7 +96,7 @@ public class SAP {
                         //see if shorter
                         int length = counter + bfs.distTo(j);
                         if (length < cacheIterable[0]) {
-                            cacheIterable[1] = i;
+                            cacheIterable[1] = j;
                             cacheIterable[0] = length;
                         }
                     }
