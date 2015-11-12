@@ -33,22 +33,21 @@ public class SAP {
         if (cache[0] == v && cache[1] == w || cache[1] == v && cache[0] == w) return cache[2];
 
         //read in G again and again?
-        BreadthFirstDirectedPaths bfs = new BreadthFirstDirectedPaths(this.G, w);
+        BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(this.G, v);
+        BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(this.G, w);
         Queue<Integer> q = new Queue<Integer>();
-        int counter = 0;
         q.enqueue(v);
 
         while (!q.isEmpty()) {
             int i = q.dequeue();
             for (int j : this.G.adj(i)) q.enqueue(j);
-            if (bfs.hasPathTo(i)) {
+            if (bfsW.hasPathTo(i)) {
                 cache[0] = v;
                 cache[1] = w;
                 cache[2] = i;
-                cache[3] = counter + bfs.distTo(i);
+                cache[3] = bfsV.distTo(i) + bfsW.distTo(i);
                 return cache[2];
             }
-            counter++;
         }
 
         //has no path
@@ -70,9 +69,10 @@ public class SAP {
             if (i < 0 || i > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
         }
 
-        BreadthFirstDirectedPaths bfs = new BreadthFirstDirectedPaths(this.G, w);
+        BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(this.G, v);
+        BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(this.G, w);
+
         Queue<Integer> q = new Queue<Integer>();
-        int counter = 0;
         cacheIterable[0] = Integer.MAX_VALUE; //shortest
         cacheIterable[1] = Integer.MAX_VALUE; //ancestor
 
@@ -83,14 +83,13 @@ public class SAP {
         while (!q.isEmpty()) {
             int i = q.dequeue();
             for (int j : this.G.adj(i)) q.enqueue(j);
-            if (bfs.hasPathTo(i)) {
-                int length = counter + bfs.distTo(i);
+            if (bfsW.hasPathTo(i)) {
+                int length = bfsV.distTo(i) + bfsW.distTo(i);
                 if (length < cacheIterable[0]) {
                     cacheIterable[1] = i;
                     cacheIterable[0] = length;
                 }
             }
-            counter++;
         }
 
         //has no such path
@@ -105,31 +104,14 @@ public class SAP {
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w)
     {
         //what about cache?
-        //not test yet
         length(v, w);
         return cacheIterable[1];
     }
-
-    //     public void testIterable(int a, int b, SAP sap) {
-    //         Queue<Integer> q1 = new Queue<Integer>();
-    //         q1.enqueue(a);
-    //         Queue<Integer> q2 = new Queue<Integer>();
-    //         q2.enqueue(b);
-    //         StdOut.println(a + " and " + b + " legnth is " + sap.length(q1, q2));
-    //         StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(q1, q2));
-    //     }
-    // 
-    //     public void testSingle(int a, int b, SAP sap) {
-    //         StdOut.println(a + " and " + b + " legnth is " + sap.length(a, b));
-    //         StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(a, b));
-    //     }
 
     // do unit testing of this class
     public static void main(String[] args) { 
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-        //sap.testIterable(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
-        //sap.testSingle(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
     }
 }
