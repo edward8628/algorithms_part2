@@ -2,6 +2,7 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Queue;
 
 public class SAP {
     private Digraph G;
@@ -29,30 +30,24 @@ public class SAP {
     {
         if (v < 0 || v > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
         if (w < 0 || w > G.V()-1) throw new java.lang.IndexOutOfBoundsException();
-        if (cache[0]==v && cache[1]==w || cache[1]==v && cache[0]==w) return cache[2];
+        if (cache[0] == v && cache[1] == w || cache[1] == v && cache[0] == w) return cache[2];
 
         //read in G again and again?
         BreadthFirstDirectedPaths bfs = new BreadthFirstDirectedPaths(this.G, w);
+        Queue<Integer> q = new Queue<Integer>();
         int counter = 0;
-
-        while (this.G.outdegree(v) != 0) {//if at root
-            if (bfs.hasPathTo(v)) {//ancestor is itself
+        q.enqueue(v);
+        
+        while (!q.isEmpty()) {
+            int i = q.dequeue();
+            counter++;
+            for (int j : this.G.adj(i)) q.enqueue(j);
+            if (bfs.hasPathTo(i)) {
                 cache[0] = v;
                 cache[1] = w;
-                cache[2] = v;
-                cache[3] = counter + bfs.distTo(v);
+                cache[2] = i;
+                cache[3] = counter + bfs.distTo(i);
                 return cache[2];
-            }
-            for (int i : this.G.adj(v)) {
-                counter++;
-                if (bfs.hasPathTo(i)) {
-                    cache[0] = v;
-                    cache[1] = w;
-                    cache[2] = i;
-                    cache[3] = counter + bfs.distTo(i);
-                    return cache[2];
-                }
-                v = i;
             }
         }
 
@@ -129,12 +124,16 @@ public class SAP {
         SAP sap = new SAP(G);
 
         //test single length and ancestor
-        for (int v = 0; v < G.V(); v++) {
-            for (int w = 0; w < G.V(); w++){
-                StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
-                StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
-            }
-        }
+        //         for (int v = 0; v < G.V(); v++) {
+        //             for (int w = 0; w < G.V(); w++){
+        //                 StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
+        //                 StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
+        //             }
+        //         }
 
+        StdOut.println(args[1] + " and " + args[2] + " legnth is " + 
+            sap.length(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+        StdOut.println(args[1] + " and " + args[2] + " ancestor is " + 
+            sap.ancestor(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
     }
 }

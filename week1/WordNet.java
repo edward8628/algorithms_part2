@@ -112,17 +112,16 @@ public class WordNet {
     // do unit testing of this class
     public static void main(String[] args) {
         WordNet wordnet = new WordNet(args[0], args[1]);
-        int counter = 0;
 
         //loop test entire data set
-        for (String n1 : wordnet.nouns()) {
-            //StdOut.println(counter);
-            for (String n2 : wordnet.nouns()) {
-                //StdOut.println(n1+" and "+n2+" has sap "+wordnet.sap(n1, n2));
-                wordnet.sap(n1, n2);
-                //StdOut.println(n1+" and "+n2+" has distance "+wordnet.distance(n1, n2));
-                wordnet.distance(n1, n2);
-            }
-        }
+        //         for (String n1 : wordnet.nouns()) {
+        //             for (String n2 : wordnet.nouns()) {
+        //                 StdOut.println(n1+" and "+n2+" has sap "+wordnet.sap(n1, n2));
+        //                 StdOut.println(n1+" and "+n2+" has distance "+wordnet.distance(n1, n2));
+        //             }
+        //         }
+
+        StdOut.println(args[2]+" and "+args[3]+" has sap "+wordnet.sap(args[2], args[3]));
+        StdOut.println(args[2]+" and "+args[3]+" has distance "+wordnet.distance(args[2], args[3]));
     }
 }
