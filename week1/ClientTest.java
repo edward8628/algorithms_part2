@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Stopwatch;
 
 /**
  * Write a description of class ClientTest here.
@@ -18,13 +19,30 @@ public class ClientTest
         q1.enqueue(a);
         Queue<Integer> q2 = new Queue<Integer>();
         q2.enqueue(b);
-        StdOut.println(a + " and " + b + " legnth is " + sap.length(q1, q2));
-        StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(q1, q2));
+
+        Stopwatch lengthWatch = new Stopwatch(); 
+        int length = sap.length(q1, q2);
+        double lengthTime = lengthWatch.elapsedTime();
+
+        Stopwatch ancestorWatch = new Stopwatch(); 
+        int ancestor = sap.ancestor(q1, q2);
+        double ancestorTime = ancestorWatch.elapsedTime();
+
+        StdOut.println(a + " and " + b + " legnth is " + length + " time is " + lengthTime);
+        StdOut.println(a + " and " + b + " ancestor is " + ancestor + " time is " + ancestorTime);
     }
 
     public void testSingle(int a, int b, SAP sap) {
-        StdOut.println(a + " and " + b + " legnth is " + sap.length(a, b));
-        StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(a, b));
+        Stopwatch lengthWatch = new Stopwatch(); 
+        int length = sap.length(a, b);
+        double lengthTime = lengthWatch.elapsedTime();
+
+        Stopwatch ancestorWatch = new Stopwatch(); 
+        int ancestor = sap.ancestor(a, b);
+        double ancestorTime = ancestorWatch.elapsedTime();
+        
+        StdOut.println(a + " and " + b + " legnth is " + length + " time is " + lengthTime);
+        StdOut.println(a + " and " + b + " ancestor is " + ancestor + " time is " + ancestorTime);
     }
 
     public static void main(String[] args) {
@@ -32,6 +50,7 @@ public class ClientTest
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
         ClientTest test = new ClientTest();
+
         test.testIterable(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
         test.testSingle(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
     }
