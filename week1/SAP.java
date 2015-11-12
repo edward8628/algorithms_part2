@@ -110,26 +110,26 @@ public class SAP {
         return cacheIterable[1];
     }
 
-    public void testIterable(int a, int b, SAP sap) {
-        Queue<Integer> q1 = new Queue<Integer>();
-        q1.enqueue(a);
-        Queue<Integer> q2 = new Queue<Integer>();
-        q2.enqueue(b);
-        StdOut.println(a + " and " + b + " legnth is " + sap.length(q1, q2));
-        StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(q1, q2));
-    }
-
-    public void testSingle(int a, int b, SAP sap) {
-        StdOut.println(a + " and " + b + " legnth is " + sap.length(a, b));
-        StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(a, b));
-    }
+    //     public void testIterable(int a, int b, SAP sap) {
+    //         Queue<Integer> q1 = new Queue<Integer>();
+    //         q1.enqueue(a);
+    //         Queue<Integer> q2 = new Queue<Integer>();
+    //         q2.enqueue(b);
+    //         StdOut.println(a + " and " + b + " legnth is " + sap.length(q1, q2));
+    //         StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(q1, q2));
+    //     }
+    // 
+    //     public void testSingle(int a, int b, SAP sap) {
+    //         StdOut.println(a + " and " + b + " legnth is " + sap.length(a, b));
+    //         StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(a, b));
+    //     }
 
     // do unit testing of this class
     public static void main(String[] args) { 
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-        sap.testIterable(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
-        sap.testSingle(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
+        //sap.testIterable(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
+        //sap.testSingle(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
     }
 }
