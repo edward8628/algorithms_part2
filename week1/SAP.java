@@ -37,7 +37,7 @@ public class SAP {
         Queue<Integer> q = new Queue<Integer>();
         int counter = 0;
         q.enqueue(v);
-        
+
         while (!q.isEmpty()) {
             int i = q.dequeue();
             counter++;
@@ -71,36 +71,29 @@ public class SAP {
         }
 
         BreadthFirstDirectedPaths bfs = new BreadthFirstDirectedPaths(this.G, w);
+        Queue<Integer> q = new Queue<Integer>();
+        int counter = 0;
         cacheIterable[0] = Integer.MAX_VALUE; //shortest
         cacheIterable[1] = Integer.MAX_VALUE; //ancestor
 
         for (int i : v) {
-            int counter = 0;
-            if (bfs.hasPathTo(i)) {//ancestor is itself
+            q.enqueue(i);
+        }
+
+        while (!q.isEmpty()) {
+            int i = q.dequeue();
+            counter++;
+            for (int j : this.G.adj(i)) q.enqueue(j);
+            if (bfs.hasPathTo(i)) {
                 int length = counter + bfs.distTo(i);
                 if (length < cacheIterable[0]) {
                     cacheIterable[1] = i;
                     cacheIterable[0] = length;
-                    continue;
                 }
             }
-            while (this.G.outdegree(i) != 0) {//if at root
-                for (int j : this.G.adj(i)) {
-                    counter++;
-                    if (bfs.hasPathTo(j)) {
-                        //see if shorter
-                        int length = counter + bfs.distTo(j);
-                        if (length < cacheIterable[0]) {
-                            cacheIterable[1] = j;
-                            cacheIterable[0] = length;
-                        }
-                    }
-                    i = j;
-                }
-            }
-            if (cacheIterable[0] == 0) break; //best solution
         }
 
+        //has no such path
         if (cacheIterable[0] == Integer.MAX_VALUE) {
             cacheIterable[0] = -1;
             cacheIterable[1] = -1;
