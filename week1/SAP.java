@@ -40,7 +40,6 @@ public class SAP {
 
         while (!q.isEmpty()) {
             int i = q.dequeue();
-            counter++;
             for (int j : this.G.adj(i)) q.enqueue(j);
             if (bfs.hasPathTo(i)) {
                 cache[0] = v;
@@ -49,6 +48,7 @@ public class SAP {
                 cache[3] = counter + bfs.distTo(i);
                 return cache[2];
             }
+            counter++;
         }
 
         //has no path
@@ -82,7 +82,6 @@ public class SAP {
 
         while (!q.isEmpty()) {
             int i = q.dequeue();
-            counter++;
             for (int j : this.G.adj(i)) q.enqueue(j);
             if (bfs.hasPathTo(i)) {
                 int length = counter + bfs.distTo(i);
@@ -91,6 +90,7 @@ public class SAP {
                     cacheIterable[0] = length;
                 }
             }
+            counter++;
         }
 
         //has no such path
@@ -110,23 +110,26 @@ public class SAP {
         return cacheIterable[1];
     }
 
+    public void testIterable(int a, int b, SAP sap) {
+        Queue<Integer> q1 = new Queue<Integer>();
+        q1.enqueue(a);
+        Queue<Integer> q2 = new Queue<Integer>();
+        q2.enqueue(b);
+        StdOut.println(a + " and " + b + " legnth is " + sap.length(q1, q2));
+        StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(q1, q2));
+    }
+
+    public void testSingle(int a, int b, SAP sap) {
+        StdOut.println(a + " and " + b + " legnth is " + sap.length(a, b));
+        StdOut.println(a + " and " + b + " ancestor is " + sap.ancestor(a, b));
+    }
+
     // do unit testing of this class
     public static void main(String[] args) { 
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-
-        //test single length and ancestor
-        //         for (int v = 0; v < G.V(); v++) {
-        //             for (int w = 0; w < G.V(); w++){
-        //                 StdOut.println(v + " and " + w + " legnth is " + sap.length(v,w));
-        //                 StdOut.println(v + " and " + w + " ancestor is " + sap.ancestor(v,w));
-        //             }
-        //         }
-
-        StdOut.println(args[1] + " and " + args[2] + " legnth is " + 
-            sap.length(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
-        StdOut.println(args[1] + " and " + args[2] + " ancestor is " + 
-            sap.ancestor(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+        sap.testIterable(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
+        sap.testSingle(Integer.parseInt(args[1]), Integer.parseInt(args[2]), sap);
     }
 }
