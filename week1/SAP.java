@@ -39,13 +39,9 @@ public class SAP {
         //read in G again and again?
         BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(this.G, v);
         BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(this.G, w);
-        Queue<Integer> q = new Queue<Integer>();
-        q.enqueue(v);
 
-        while (!q.isEmpty()) {
-            int i = q.dequeue();
-            for (int j : this.G.adj(i)) q.enqueue(j);
-            if (bfsW.hasPathTo(i)) {
+        for (int i = 0; i < this.G.V(); i++) {
+            if (bfsW.hasPathTo(i) && bfsV.hasPathTo(i)) {
                 int length = bfsV.distTo(i) + bfsW.distTo(i);
                 if (cache[3] == -1 || length < cache[3]) {
                     cache[0] = v;
@@ -55,6 +51,7 @@ public class SAP {
                 }
             }
         }
+
         return cache[2];
     }
 
@@ -71,19 +68,11 @@ public class SAP {
 
         BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(this.G, v);
         BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(this.G, w);
-
-        Queue<Integer> q = new Queue<Integer>();
         cacheIterable[0] = Integer.MAX_VALUE; //shortest
         cacheIterable[1] = Integer.MAX_VALUE; //ancestor
 
-        for (int i : v) {
-            q.enqueue(i);
-        }
-
-        while (!q.isEmpty()) {
-            int i = q.dequeue();
-            for (int j : this.G.adj(i)) q.enqueue(j);
-            if (bfsW.hasPathTo(i)) {
+        for (int i = 0; i < this.G.V(); i++) {
+            if (bfsW.hasPathTo(i) && bfsV.hasPathTo(i)) {
                 int length = bfsV.distTo(i) + bfsW.distTo(i);
                 if (length < cacheIterable[0]) {
                     cacheIterable[1] = i;
