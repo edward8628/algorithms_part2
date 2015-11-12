@@ -112,24 +112,17 @@ public class WordNet {
     // do unit testing of this class
     public static void main(String[] args) {
         WordNet wordnet = new WordNet(args[0], args[1]);
+        int counter = 0;
 
-        //         //test iterable
-        //         for (String noun : wordnet.nouns()) {
-        //             StdOut.println(noun);
-        //         }
-
-        //i need to make a loop to test with all data set
-        //test isNoun
-        StdOut.println("a is " + wordnet.isNoun("a"));
-        StdOut.println("b is " + wordnet.isNoun("b"));
-        StdOut.println("C-reactive_protein is " + wordnet.isNoun("C-reactive_protein"));
-        StdOut.println("whopper is " + wordnet.isNoun("whopper"));
-
-        //test sap
-        StdOut.println(wordnet.sap("zymase", "whacker")); // 83 and 84
-
-        //test length
-        StdOut.println(wordnet.distance("zymase", "whacker"));
+        //loop test entire data set
+        for (String n1 : wordnet.nouns()) {
+            //StdOut.println(counter);
+            for (String n2 : wordnet.nouns()) {
+                //StdOut.println(n1+" and "+n2+" has sap "+wordnet.sap(n1, n2));
+                wordnet.sap(n1, n2);
+                //StdOut.println(n1+" and "+n2+" has distance "+wordnet.distance(n1, n2));
+                wordnet.distance(n1, n2);
+            }
+        }
     }
-
 }
