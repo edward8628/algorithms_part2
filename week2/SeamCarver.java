@@ -76,8 +76,7 @@ public class SeamCarver {
     public double energy(int x, int y) {
         if (x < 0 || x > this.width) throw new java.lang.IndexOutOfBoundsException();
         if (y < 0 || y > this.height) throw new java.lang.IndexOutOfBoundsException();
-
-        return 0;
+        return this.energy[x][y];
     }
 
     // sequence of indices for horizontal seam
