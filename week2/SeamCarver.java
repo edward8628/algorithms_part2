@@ -17,8 +17,8 @@ public class SeamCarver {
         this.height = picture.height();
         this.picture = picture;
         //this.picture = new Picture(picture); //new or not new?
-        this.energy = new double[width][height]; //energy or no energy array?
-        //calculateEnergy();         //calculate every energy
+        this.energy = new double[width][height]; //once for all or calculate each time
+        //calculateEnergy(); //calculate every energy
         //read about optimaze 
 
     }
@@ -27,7 +27,7 @@ public class SeamCarver {
         //dont forget to cast from int to double
         //I can simplify the process
         if (i == 0 || j == 0 || i == width-1 || j == height-1) {
-            return 1000.0;
+            return 1000.0; //right?
         }
         // x
         Color colorX1 = picture.get(i, j-1);
@@ -109,49 +109,32 @@ public class SeamCarver {
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
-        int[] prevSeam = new int[this.picture.height()];
-        double prevEnergy = 0;
-        int[] currSeam = new int[this.picture.height()];
-        double currEnergy = 0;
+        int[] edgeTo = new int[this.picture.height()];
+        double distTo[][] = new double[this.picture.width()][this.picture.height()];
 
         //what if out of bound?
-        for (int i = 1; i < this.width-1; i++) { //go through every vertical
-            int seed = i;
-            currSeam[0] = seed; //whatever first row
-            for (int j = 0; j < this.height-1; j++) { //find min seam of this vertical
-                //find j+1 smallest energy
-                double a = energy(seed-1, j+1);//downleft
-                double b = energy(seed, j+1);//downstraight
-                double c = energy(seed+1, j+1);//doneright
-                double result = findSmall(a, b, c);
-                //find its seed and save
-                if (result==b) {
-                    currSeam[j+1] = seed;
-                }
-                else if (result==a) {
-                    seed = seed-1;
-                    currSeam[j+1] = seed;
-                }
-                else if (result==c) {
-                    seed = seed+1;
-                    currSeam[j+1] = seed;
-                }
-                //sum smaller energy to total
-                currEnergy += result;
-            }
-            //current is smaller and update to prev
-            
-            for (int k : currSeam) {
-                StdOut.println("test "+k);
-            }
-            StdOut.println();
-            if (currEnergy < prevEnergy) {
-                prevEnergy = currEnergy;
-                prevSeam = currSeam;
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                relax();//parent pix and current pix as args
             }
         }
 
-        return prevSeam;
+        return seam;
+    }
+
+    //update distTo and edgeTo
+    private void relax() {
+        //might not be right
+        if (distTo[][] == 0) {
+            distTo[][]=energy();//nothign yet and save
+            edgeTo[]=; //save parent pix
+            return;
+        }
+
+        if (distTo[][] > distTo[][]+energy()) {//current > parent energy + current energy
+            distTo[][]=distTo[][]+energy();//current = parent energy + current energy
+            edgeTo[]=; //save parent pix
+        }
     }
 
     //update array of energy every time after removal
