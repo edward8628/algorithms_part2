@@ -3,12 +3,13 @@ import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.Stopwatch;
 import java.awt.Color;
 import edu.princeton.cs.algs4.Picture;
+import edu.princeton.cs.algs4.MinPQ;
 
 public class SeamCarver {
     private int width;
     private int height;
     private double[][] energy;
-    private Picture picture;
+    private Picture picture; // save color or picture?
 
     // create a seam carver object based on the given pictur
     public SeamCarver(Picture picture) {
@@ -16,43 +17,48 @@ public class SeamCarver {
         this.height = picture.height();
         this.picture = picture;
         //this.picture = new Picture(picture); //new or not new?
-        this.energy = new double[width][height];
-        calculateEnergy();         //calculate every energy
+        this.energy = new double[width][height]; //energy or no energy array?
+        //calculateEnergy();         //calculate every energy
+        //read about optimaze 
 
     }
 
-    private void calculateEnergy() {
+    private double singleEnergy(int i, int j) {
+        //dont forget to cast from int to double
+        //I can simplify the process
+        if (i == 0 || j == 0 || i == width-1 || j == height-1) {
+            return 1000.0;
+        }
+        // x
+        Color colorX1 = picture.get(i, j-1);
+        Color colorX2 = picture.get(i, j+1);
+        int r1 = colorX1.getRed();
+        int b1 = colorX1.getBlue();
+        int g1 = colorX1.getGreen();
+        int r2 = colorX2.getRed();
+        int b2 = colorX2.getBlue();
+        int g2 = colorX2.getGreen();
+        double x = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
+
+        //y
+        Color colorY1 = picture.get(i-1, j);
+        Color colorY2 = picture.get(i+1, j);
+        r1 = colorY1.getRed();
+        b1 = colorY1.getBlue();
+        g1 = colorY1.getGreen();
+        r2 = colorY2.getRed();
+        b2 = colorY2.getBlue();
+        g2 = colorY2.getGreen();
+
+        double y = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
+        return Math.sqrt(x+y);
+    }
+
+    private void entireEnergy() {
+        this.energy = new double[width][height]; //energy or no energy?
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (i == 0 || j == 0 || i == width-1 || j == height-1) { //right?
-                    energy[i][j] = 1000;
-                    continue;
-                }
-                //dont forget to cast from int to double
-                //I can simplify the process
-                // x
-                Color colorX1 = picture.get(i, j-1);
-                Color colorX2 = picture.get(i, j+1);
-                int r1 = colorX1.getRed();
-                int b1 = colorX1.getBlue();
-                int g1 = colorX1.getGreen();
-                int r2 = colorX2.getRed();
-                int b2 = colorX2.getBlue();
-                int g2 = colorX2.getGreen();
-                double x = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
-
-                //y
-                Color colorY1 = picture.get(i-1, j);
-                Color colorY2 = picture.get(i+1, j);
-                r1 = colorY1.getRed();
-                b1 = colorY1.getBlue();
-                g1 = colorY1.getGreen();
-                r2 = colorY2.getRed();
-                b2 = colorY2.getBlue();
-                g2 = colorY2.getGreen();
-
-                double y = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
-                energy[i][j] = Math.sqrt(x+y);
+                energy[i][j] = singleEnergy(i, j);;
             }
         }
     }
@@ -76,17 +82,81 @@ public class SeamCarver {
     public double energy(int x, int y) {
         if (x < 0 || x > this.width) throw new java.lang.IndexOutOfBoundsException();
         if (y < 0 || y > this.height) throw new java.lang.IndexOutOfBoundsException();
-        return this.energy[x][y];
+
+        return singleEnergy(x, y);
     }
 
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        return null;
+        int[] result = new int[this.width];
+        //perform
+
+        //transpose
+        for (int i = 0; i < width; i++) {
+            for (int j = i+1; j < height; j++) {
+                Color temp = picture.get(i, j);
+                picture.set(i, j, picture.get(j, i));
+                picture.set(j, i, temp);
+            }
+        }
+
+        return result;
+    }
+
+    private double findSmall (double a, double b, double c) {
+        return Math.min(Math.min(a, b), c);
     }
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
-        return null;
+        int[] prevSeam = new int[this.picture.height()];
+        double prevEnergy = 0;
+        int[] currSeam = new int[this.picture.height()];
+        double currEnergy = 0;
+
+        //what if out of bound?
+        for (int i = 1; i < this.width-1; i++) { //go through every vertical
+            int seed = i;
+            currSeam[0] = seed; //whatever first row
+            for (int j = 0; j < this.height-1; j++) { //find min seam of this vertical
+                //find j+1 smallest energy
+                double a = energy(seed-1, j+1);//downleft
+                double b = energy(seed, j+1);//downstraight
+                double c = energy(seed+1, j+1);//doneright
+                double result = findSmall(a, b, c);
+                //find its seed and save
+                if (result==b) {
+                    currSeam[j+1] = seed;
+                }
+                else if (result==a) {
+                    seed = seed-1;
+                    currSeam[j+1] = seed;
+                }
+                else if (result==c) {
+                    seed = seed+1;
+                    currSeam[j+1] = seed;
+                }
+                //sum smaller energy to total
+                currEnergy += result;
+            }
+            //current is smaller and update to prev
+            
+            for (int k : currSeam) {
+                StdOut.println("test "+k);
+            }
+            StdOut.println();
+            if (currEnergy < prevEnergy) {
+                prevEnergy = currEnergy;
+                prevSeam = currSeam;
+            }
+        }
+
+        return prevSeam;
+    }
+
+    //update array of energy every time after removal
+    private void updateEnergy() {
+
     }
 
     // remove horizontal seam from current picture
@@ -103,5 +173,17 @@ public class SeamCarver {
         //sc.picture().show();
         StdOut.println("width is " + sc.width());
         StdOut.println("height is " + sc.height());
+        //i want to test with all images
+
+        //         //print all energy
+        //         for (int i = 0; i < sc.width(); i++) {
+        //             for (int j = 0; j < sc.height(); j++) {
+        //                 StdOut.println(sc.energy(i, j));
+        //             }
+        //         }
+        for (int i : sc.findVerticalSeam()) {
+            StdOut.println(i);
+        }
+
     }
 }
