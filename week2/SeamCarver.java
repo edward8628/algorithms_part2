@@ -55,7 +55,7 @@ public class SeamCarver {
         g2 = colorY2.getGreen();
 
         double y = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
-        return Math.sqrt(x+y);
+        return Math.sqrt(x+y); //sqrt is expensive, remove?
     }
 
     //     private void entireEnergy() {
@@ -120,14 +120,14 @@ public class SeamCarver {
         //init with MAX OR ZERO? O(HW)
         for (int i = 0; i < this.picture.width(); i++) {
             for (int j = 0; j < this.picture.height(); j++) {
-                distTo[i][j] = Double.MAX_VALUE;
+                distTo[i][j] = Double.MAX_VALUE;//or 255*255*255*2?
             }
         }
 
         //what if out of bound?
         //process of relaxation each pixel O(HW)
         for (int i = 0; i < this.picture.width(); i++) {
-            for (int j = 0; j < this.picture.height(); j++) {
+            for (int j = 0; j < this.picture.height()-1; j++) {//skip last row
                 relax(i, j);//parent pix and current pix as args
             }
         }
@@ -136,6 +136,7 @@ public class SeamCarver {
         double smallest = Double.MAX_VALUE;
         int[] seam = new int[this.picture.height()];
         for (int i = 0; i < this.picture.width(); i++) {
+            StdOut.println(distTo[i][this.picture.height()-1]);
             if (distTo[i][this.picture.height()-1] < smallest) {
                 smallest = distTo[i][this.picture.height()-1];
                 seam[this.picture.height()-1] = i;
@@ -156,7 +157,8 @@ public class SeamCarver {
         //might not be right
         //this way is like checking all (i,j)'s adj
         //down left
-        if (distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {//current > parent energy + current energy
+        if (j == 0) distTo[i][j]=energy(i, j);
+        if (i != 0 && distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {//current > parent energy + current energy
             distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);//current = parent energy + current energy
             edgeTo[i-1][j+1]=i; //save parent pix
         }
@@ -166,15 +168,19 @@ public class SeamCarver {
             edgeTo[i][j+1]=i; //save parent pix
         }
         //down right
-        if (distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {//current > parent energy + current energy
+        if (i != this.picture.width()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {//current > parent energy + current energy
             distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);//current = parent energy + current energy
             edgeTo[i+1][j+1]=i; //save parent pix
         }
     }
 
+    private void printDistTo() {
+
+    }
+
     //update array of energy every time after removal
     private void updateEnergy() {
-
+        //not to calcuatle unchanged energy
     }
 
     // remove horizontal seam from current picture
