@@ -8,8 +8,11 @@ import edu.princeton.cs.algs4.MinPQ;
 public class SeamCarver {
     private int width;
     private int height;
-    private double[][] energy;
+    //private double[][] energy;
     private Picture picture; // save color or picture?
+    private int[][] edgeTo; // this way save memory?
+    private double[][] distTo;
+    //System.arraycopy();
 
     // create a seam carver object based on the given pictur
     public SeamCarver(Picture picture) {
@@ -17,8 +20,8 @@ public class SeamCarver {
         this.height = picture.height();
         this.picture = picture;
         //this.picture = new Picture(picture); //new or not new?
-        this.energy = new double[width][height]; //once for all or calculate each time
-        //calculateEnergy(); //calculate every energy
+        //this.energy = new double[width][height]; //entire or single?
+        //calculateEnergy(); //calculate entire energy
         //read about optimaze 
 
     }
@@ -30,6 +33,7 @@ public class SeamCarver {
             return 1000.0; //right?
         }
         // x
+        // i have to check for optimal
         Color colorX1 = picture.get(i, j-1);
         Color colorX2 = picture.get(i, j+1);
         int r1 = colorX1.getRed();
@@ -54,14 +58,14 @@ public class SeamCarver {
         return Math.sqrt(x+y);
     }
 
-    private void entireEnergy() {
-        this.energy = new double[width][height]; //energy or no energy?
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                energy[i][j] = singleEnergy(i, j);;
-            }
-        }
-    }
+    //     private void entireEnergy() {
+    //         this.energy = new double[width][height];
+    //         for (int i = 0; i < width; i++) {
+    //             for (int j = 0; j < height; j++) {
+    //                 energy[i][j] = singleEnergy(i, j);;
+    //             }
+    //         }
+    //     }
 
     // current picture
     public Picture picture() {
@@ -88,8 +92,7 @@ public class SeamCarver {
 
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        int[] result = new int[this.width];
-        //perform
+        int[] edgeTo = new int[this.picture.height()];
 
         //transpose
         for (int i = 0; i < width; i++) {
@@ -99,8 +102,10 @@ public class SeamCarver {
                 picture.set(j, i, temp);
             }
         }
+        // treat as find vertical like document said
+        //transpose back
 
-        return result;
+        return edgeTo;
     }
 
     private double findSmall (double a, double b, double c) {
@@ -109,31 +114,61 @@ public class SeamCarver {
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
-        int[] edgeTo = new int[this.picture.height()];
-        double distTo[][] = new double[this.picture.width()][this.picture.height()];
+        //this way save memory?
+        edgeTo = new int[this.picture.width()][this.picture.height()];
+        distTo = new double[this.picture.width()][this.picture.height()];
+        //init with MAX OR ZERO? O(HW)
+        for (int i = 0; i < this.picture.width(); i++) {
+            for (int j = 0; j < this.picture.height(); j++) {
+                distTo[i][j] = Double.MAX_VALUE;
+            }
+        }
 
         //what if out of bound?
-        for (int i = 0; i < width(); i++) {
-            for (int j = 0; j < height(); j++) {
-                relax();//parent pix and current pix as args
+        //process of relaxation each pixel O(HW)
+        for (int i = 0; i < this.picture.width(); i++) {
+            for (int j = 0; j < this.picture.height(); j++) {
+                relax(i, j);//parent pix and current pix as args
             }
+        }
+
+        //search last row to find smallest energy O(H+W)
+        double smallest = Double.MAX_VALUE;
+        int[] seam = new int[this.picture.height()];
+        for (int i = 0; i < this.picture.width(); i++) {
+            if (distTo[i][this.picture.height()-1] < smallest) {
+                smallest = distTo[i][this.picture.height()-1];
+                seam[this.picture.height()-1] = i;
+            }
+        }
+
+        //hope this right
+        //trace up from smallest in last row
+        for (int j = this.picture.height()-2; j >= 0; j--) {
+            seam[j] = edgeTo[seam[j+1]][j+1];
         }
 
         return seam;
     }
 
     //update distTo and edgeTo
-    private void relax() {
+    private void relax(int i, int j) {
         //might not be right
-        if (distTo[][] == 0) {
-            distTo[][]=energy();//nothign yet and save
-            edgeTo[]=; //save parent pix
-            return;
+        //this way is like checking all (i,j)'s adj
+        //down left
+        if (distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {//current > parent energy + current energy
+            distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);//current = parent energy + current energy
+            edgeTo[i-1][j+1]=i; //save parent pix
         }
-
-        if (distTo[][] > distTo[][]+energy()) {//current > parent energy + current energy
-            distTo[][]=distTo[][]+energy();//current = parent energy + current energy
-            edgeTo[]=; //save parent pix
+        //down
+        if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {//current > parent energy + current energy
+            distTo[i][j+1]=distTo[i][j]+energy(i, j+1);//current = parent energy + current energy
+            edgeTo[i][j+1]=i; //save parent pix
+        }
+        //down right
+        if (distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {//current > parent energy + current energy
+            distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);//current = parent energy + current energy
+            edgeTo[i+1][j+1]=i; //save parent pix
         }
     }
 
