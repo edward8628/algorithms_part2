@@ -1,12 +1,10 @@
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.Stopwatch;
 import java.awt.Color;
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.MinPQ;
 
 public class SeamCarver {
-    private Picture picture; // save color or picture?
+    private Picture picture;
     private int[][] edgeTo; // this way save memory?
     private double[][] distTo;
     //System.arraycopy(); //remove seam?
@@ -14,7 +12,7 @@ public class SeamCarver {
     // create a seam carver object based on the given pictur
     public SeamCarver(Picture picture) {
         this.picture = picture;
-        //this.picture = new Picture(picture); //new or not new?
+        // save color or picture?
         //read about optimaze 
 
     }
@@ -26,7 +24,7 @@ public class SeamCarver {
             return 1000.0; //right?
         }
         // x
-        // i have to check for optimal
+        //have to check for optimal
         Color colorX1 = picture.get(i, j-1);
         Color colorX2 = picture.get(i, j+1);
         int r1 = colorX1.getRed();
@@ -35,7 +33,7 @@ public class SeamCarver {
         int r2 = colorX2.getRed();
         int b2 = colorX2.getBlue();
         int g2 = colorX2.getGreen();
-        double x = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
+        int x = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
 
         //y
         Color colorY1 = picture.get(i-1, j);
@@ -46,8 +44,7 @@ public class SeamCarver {
         r2 = colorY2.getRed();
         b2 = colorY2.getBlue();
         g2 = colorY2.getGreen();
-
-        double y = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
+        int y = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
 
         return Math.sqrt(x+y); //sqrt is expensive, remove?
     }
@@ -79,13 +76,6 @@ public class SeamCarver {
         int[] edgeTo = new int[this.picture.height()];
 
         //transpose
-        for (int i = 0; i < this.picture.width(); i++) {
-            for (int j = i+1; j < this.picture.height(); j++) {
-                Color temp = picture.get(i, j);
-                picture.set(i, j, picture.get(j, i));
-                picture.set(j, i, temp);
-            }
-        }
         // treat as find vertical like document said
         //transpose back
 
@@ -98,15 +88,15 @@ public class SeamCarver {
         edgeTo = new int[this.picture.width()][this.picture.height()];
         distTo = new double[this.picture.width()][this.picture.height()];
         //init with MAX OR ZERO? O(HW)
-        for (int i = 0; i < this.picture.width(); i++) {
-            for (int j = 0; j < this.picture.height(); j++) {
+        for (int j = 0; j < this.picture.height(); j++) {
+            for (int i = 0; i < this.picture.width(); i++) {
                 distTo[i][j] = Double.MAX_VALUE;
             }
         }
 
         //process of relaxation each pixel O(HW)
-        for (int i = 0; i < this.picture.width(); i++) {
-            for (int j = 0; j < this.picture.height()-1; j++) {//skip last row
+        for (int j = 0; j < this.picture.height()-1; j++) {
+            for (int i = 0; i < this.picture.width(); i++) {//skip last row
                 relax(i, j);//relax current pixel
             }
         }
@@ -134,22 +124,28 @@ public class SeamCarver {
 
     //checking all current's adj update distTo and edgeTo
     private void relax(int i, int j) {
-        //might not be right
-        //down left
         if (j == 0) distTo[i][j]=energy(i, j);
-        if (i != 0 && distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {
-            distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);//down left = par energy + curr energy
-            edgeTo[i-1][j+1]=i; 
+
+        //down right
+        if (i != this.picture.width()-1 ) {
+            if (distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {
+                distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);//down right = par energy + curr energy
+                edgeTo[i+1][j+1]=i;
+            }
         }
         //down
-        if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {//curr > par energy + curr energy
-            distTo[i][j+1]=distTo[i][j]+energy(i, j+1);//down = par energy + curr energy
-            edgeTo[i][j+1]=i;
+        if (true){
+            if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {//curr > par energy + curr energy
+                distTo[i][j+1]=distTo[i][j]+energy(i, j+1);//down = par energy + curr energy
+                edgeTo[i][j+1]=i;
+            }
         }
-        //down right
-        if (i != this.picture.width()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {
-            distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);//down right = par energy + curr energy
-            edgeTo[i+1][j+1]=i;
+        //down left
+        if (i != 0) {
+            if (distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {
+                distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);//down left = par energy + curr energy
+                edgeTo[i-1][j+1]=i; 
+            }
         }
     }
 
