@@ -6,22 +6,15 @@ import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.MinPQ;
 
 public class SeamCarver {
-    private int width;
-    private int height;
-    //private double[][] energy;
     private Picture picture; // save color or picture?
     private int[][] edgeTo; // this way save memory?
     private double[][] distTo;
-    //System.arraycopy();
+    //System.arraycopy(); //remove seam?
 
     // create a seam carver object based on the given pictur
     public SeamCarver(Picture picture) {
-        this.width = picture.width();
-        this.height = picture.height();
         this.picture = picture;
         //this.picture = new Picture(picture); //new or not new?
-        //this.energy = new double[width][height]; //entire or single?
-        //calculateEnergy(); //calculate entire energy
         //read about optimaze 
 
     }
@@ -29,7 +22,7 @@ public class SeamCarver {
     private double singleEnergy(int i, int j) {
         //dont forget to cast from int to double
         //I can simplify the process
-        if (i == 0 || j == 0 || i == width-1 || j == height-1) {
+        if (i == 0 || j == 0 || i == this.picture.width()-1 || j == this.picture.height()-1) {
             return 1000.0; //right?
         }
         // x
@@ -55,17 +48,9 @@ public class SeamCarver {
         g2 = colorY2.getGreen();
 
         double y = (r1-r2)*(r1-r2) + (g1-g2)*(g1-g2) + (b1-b2)*(b1-b2);
+
         return Math.sqrt(x+y); //sqrt is expensive, remove?
     }
-
-    //     private void entireEnergy() {
-    //         this.energy = new double[width][height];
-    //         for (int i = 0; i < width; i++) {
-    //             for (int j = 0; j < height; j++) {
-    //                 energy[i][j] = singleEnergy(i, j);;
-    //             }
-    //         }
-    //     }
 
     // current picture
     public Picture picture() {
@@ -74,19 +59,18 @@ public class SeamCarver {
 
     // width of current picture
     public int width() {
-        return this.width;
+        return this.picture.width();
     }
 
     // height of current picture
     public int height() {
-        return this.height;
+        return this.picture.height();
     }
 
     // energy of pixel at column x and row y
     public double energy(int x, int y) {
-        if (x < 0 || x > this.width) throw new java.lang.IndexOutOfBoundsException();
-        if (y < 0 || y > this.height) throw new java.lang.IndexOutOfBoundsException();
-
+        if (x < 0 || x > this.picture.width()) throw new java.lang.IndexOutOfBoundsException();
+        if (y < 0 || y > this.picture.height()) throw new java.lang.IndexOutOfBoundsException();
         return singleEnergy(x, y);
     }
 
@@ -95,8 +79,8 @@ public class SeamCarver {
         int[] edgeTo = new int[this.picture.height()];
 
         //transpose
-        for (int i = 0; i < width; i++) {
-            for (int j = i+1; j < height; j++) {
+        for (int i = 0; i < this.picture.width(); i++) {
+            for (int j = i+1; j < this.picture.height(); j++) {
                 Color temp = picture.get(i, j);
                 picture.set(i, j, picture.get(j, i));
                 picture.set(j, i, temp);
@@ -108,10 +92,6 @@ public class SeamCarver {
         return edgeTo;
     }
 
-    private double findSmall (double a, double b, double c) {
-        return Math.min(Math.min(a, b), c);
-    }
-
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
         //this way save memory?
@@ -120,15 +100,14 @@ public class SeamCarver {
         //init with MAX OR ZERO? O(HW)
         for (int i = 0; i < this.picture.width(); i++) {
             for (int j = 0; j < this.picture.height(); j++) {
-                distTo[i][j] = Double.MAX_VALUE;//or 255*255*255*2?
+                distTo[i][j] = Double.MAX_VALUE;
             }
         }
 
-        //what if out of bound?
         //process of relaxation each pixel O(HW)
         for (int i = 0; i < this.picture.width(); i++) {
             for (int j = 0; j < this.picture.height()-1; j++) {//skip last row
-                relax(i, j);//parent pix and current pix as args
+                relax(i, j);//relax current pixel
             }
         }
 
@@ -136,46 +115,64 @@ public class SeamCarver {
         double smallest = Double.MAX_VALUE;
         int[] seam = new int[this.picture.height()];
         for (int i = 0; i < this.picture.width(); i++) {
-            StdOut.println(distTo[i][this.picture.height()-1]);
             if (distTo[i][this.picture.height()-1] < smallest) {
                 smallest = distTo[i][this.picture.height()-1];
                 seam[this.picture.height()-1] = i;
             }
         }
 
-        //hope this right
         //trace up from smallest in last row
         for (int j = this.picture.height()-2; j >= 0; j--) {
             seam[j] = edgeTo[seam[j+1]][j+1];
         }
 
+        printEnergy(seam);
+        printDistTo(seam);
+
         return seam;
     }
 
-    //update distTo and edgeTo
+    //checking all current's adj update distTo and edgeTo
     private void relax(int i, int j) {
         //might not be right
-        //this way is like checking all (i,j)'s adj
         //down left
         if (j == 0) distTo[i][j]=energy(i, j);
-        if (i != 0 && distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {//current > parent energy + current energy
-            distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);//current = parent energy + current energy
-            edgeTo[i-1][j+1]=i; //save parent pix
+        if (i != 0 && distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {
+            distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);//down left = par energy + curr energy
+            edgeTo[i-1][j+1]=i; 
         }
         //down
-        if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {//current > parent energy + current energy
-            distTo[i][j+1]=distTo[i][j]+energy(i, j+1);//current = parent energy + current energy
-            edgeTo[i][j+1]=i; //save parent pix
+        if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {//curr > par energy + curr energy
+            distTo[i][j+1]=distTo[i][j]+energy(i, j+1);//down = par energy + curr energy
+            edgeTo[i][j+1]=i;
         }
         //down right
-        if (i != this.picture.width()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {//current > parent energy + current energy
-            distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);//current = parent energy + current energy
-            edgeTo[i+1][j+1]=i; //save parent pix
+        if (i != this.picture.width()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {
+            distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);//down right = par energy + curr energy
+            edgeTo[i+1][j+1]=i;
         }
     }
 
-    private void printDistTo() {
+    //print distTo with seam for debug
+    private void printDistTo(int[] seam) {
+        for (int j = 0; j < height(); j++) {
+            for (int i = 0; i < width(); i++)
+                if (seam[j]==i) StdOut.printf("%9.0f *", this.distTo[i][j]);
+                else StdOut.printf("%9.0f ", this.distTo[i][j]);
+            StdOut.println();
+        }
+        StdOut.println();
+    }
 
+    //print energy with seam for debug
+    private void printEnergy(int[] seam) {
+        for (int j = 0; j < height(); j++) {
+            for (int i = 0; i < width(); i++)
+                if (seam[j]==i) StdOut.printf("%9.0f *", this.energy(i, j));
+                else StdOut.printf("%9.0f ", this.energy(i, j));
+            StdOut.println();
+        }
+        StdOut.println();
     }
 
     //update array of energy every time after removal
