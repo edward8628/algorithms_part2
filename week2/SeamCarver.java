@@ -213,20 +213,31 @@ public class SeamCarver {
     }
 
     public static void main(String[] args) {
-        Picture pic = new Picture(args[0]);
-        SeamCarver sc = new SeamCarver(pic);
-        //sc.picture().show();
-        StdOut.println("width is " + sc.width());
-        StdOut.println("height is " + sc.height());
-        //i want to test with all images
+        String[] inputs = {"seamCarving/6x5.png", 
+                "seamCarving/7x3.png",
+                "seamCarving/7x10.png",
+                "seamCarving/10x10.png",
+                "seamCarving/10x12.png",
+                "seamCarving/12x10.png"};
 
-        for (int i : sc.findVerticalSeam()) {
-            StdOut.print(i+" ");
+        for (String input : inputs) {
+            Picture pic = new Picture(input);
+            StdOut.println(input);
+            SeamCarver sc = new SeamCarver(pic);
+            //sc.picture().show();
+            StdOut.print("width is " + sc.width());
+            StdOut.println(" height is " + sc.height());
+
+            StdOut.print("vertical seam: ");
+            for (int i : sc.findVerticalSeam()) {
+                StdOut.print(i+" ");
+            }
+            StdOut.println();
+            StdOut.print("horizontal seam: ");
+            for (int i : sc.findHorizontalSeam()) {
+                StdOut.print(i+" ");
+            }
+            StdOut.println();
         }
-        StdOut.println();
-        for (int i : sc.findHorizontalSeam()) {
-            StdOut.print(i+" ");
-        }
-        StdOut.println();
     }
 }
