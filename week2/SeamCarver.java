@@ -35,8 +35,8 @@ public class SeamCarver {
 
     // energy of pixel at column x and row y
     public double energy(int x, int y) {
-        if (x < 0 || x > width()) throw new java.lang.IndexOutOfBoundsException();
-        if (y < 0 || y > height()) throw new java.lang.IndexOutOfBoundsException();
+        if (x < 0 || x >= width()) throw new java.lang.IndexOutOfBoundsException();
+        if (y < 0 || y >= height()) throw new java.lang.IndexOutOfBoundsException();
         return singleEnergy(x, y);
     }
 
@@ -61,7 +61,7 @@ public class SeamCarver {
             (colorY1.getGreen()-colorY2.getGreen())*(colorY1.getGreen()-colorY2.getGreen()) + 
             (colorY1.getBlue()-colorY2.getBlue())*(colorY1.getBlue()-colorY2.getBlue());
 
-        return Math.sqrt(x+y); //sqrt is expensive, remove?
+        return Math.sqrt(x+y);
     }
 
     // sequence of indices for horizontal seam O(2HW)
@@ -163,17 +163,17 @@ public class SeamCarver {
         if (j == 0) distTo[i][j]=energy(i, j);
         //down left
         if (i != 0 && distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {
-            distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);//down left = par energy + curr energy
+            distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);
             edgeTo[i-1][j+1]=i; 
         }
         //down
-        if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {//curr > par energy + curr energy
-            distTo[i][j+1]=distTo[i][j]+energy(i, j+1);//down = par energy + curr energy
+        if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {
+            distTo[i][j+1]=distTo[i][j]+energy(i, j+1);
             edgeTo[i][j+1]=i;
         }
         //down right
         if (i != width()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {
-            distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);//down right = par energy + curr energy
+            distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);
             edgeTo[i+1][j+1]=i;
         }
     }
@@ -205,7 +205,8 @@ public class SeamCarver {
         if (seam == null) throw new java.lang.NullPointerException();
         if (seam.length != width()) throw new java.lang.IllegalArgumentException();
         for (int i = 1; i < seam.length; i++) {// 2 adj differ by more than 1 
-            if (Math.abs(seam[i-1]-seam[i]) > 1) throw new java.lang.IllegalArgumentException();
+            if (Math.abs(seam[i-1]-seam[i]) > 1) 
+                throw new java.lang.IllegalArgumentException();
         }
         if (height() <= 1) throw new java.lang.IllegalArgumentException();
 
@@ -226,7 +227,8 @@ public class SeamCarver {
         if (seam == null) throw new java.lang.NullPointerException();
         if (seam.length != height()) throw new java.lang.IllegalArgumentException();
         for (int i = 1; i < seam.length; i++) {// 2 adj differ by more than 1 
-            if (Math.abs(seam[i-1]-seam[i]) > 1) throw new java.lang.IllegalArgumentException();
+            if (Math.abs(seam[i-1]-seam[i]) > 1) 
+                throw new java.lang.IllegalArgumentException();
         }
         if (width() <= 1) throw new java.lang.IllegalArgumentException();
 
@@ -254,7 +256,6 @@ public class SeamCarver {
             Picture pic = new Picture(input);
             StdOut.println(input);
             SeamCarver sc = new SeamCarver(pic);
-            //sc.picture().show();
             StdOut.print("width is " + sc.width());
             StdOut.println(" height is " + sc.height());
 
