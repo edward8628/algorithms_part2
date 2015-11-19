@@ -1,19 +1,14 @@
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.Stopwatch;
 import java.awt.Color;
 import edu.princeton.cs.algs4.Picture;
 
 public class SeamCarver {
     private Picture picture;
-    //System.arraycopy(); //remove seam?
 
     // create a seam carver object based on the given pictur
     public SeamCarver(Picture picture) {
         if (picture == null) throw new java.lang.NullPointerException();
-        this.picture = picture;
-        // save color or picture or no?
-        //read about optimaze 
-
+        this.picture = new Picture(picture);
     }
 
     // current picture
@@ -66,7 +61,6 @@ public class SeamCarver {
     public int[] findHorizontalSeam() {
         int[][] edgeTo = new int[width()][height()];
         double[][] distTo = new double[width()][height()];
-        //init with MAX OR ZERO? O(HW)
         for (int j = 0; j < height(); j++) {
             for (int i = 0; i < width(); i++) {
                 distTo[i][j] = Double.MAX_VALUE;
@@ -77,21 +71,21 @@ public class SeamCarver {
         for (int i = 0; i < width()-1; i++) {
             for (int j = 0; j < height(); j++) {//skip last row
                 //relax current pixel for horizontal seam
-                if (i == 0) distTo[i][j]=energy(i, j);
+                if (i == 0) distTo[i][j] = energy(i, j);
                 //right up
                 if (j != 0 && distTo[i+1][j-1] > distTo[i][j]+energy(i+1, j-1)) {
-                    distTo[i+1][j-1]=distTo[i][j]+energy(i+1, j-1);
-                    edgeTo[i+1][j-1]=j; 
+                    distTo[i+1][j-1] = distTo[i][j]+energy(i+1, j-1);
+                    edgeTo[i+1][j-1] = j; 
                 }
                 //right
                 if (distTo[i+1][j] > distTo[i][j]+energy(i+1, j)) {
-                    distTo[i+1][j]=distTo[i][j]+energy(i+1, j);
-                    edgeTo[i+1][j]=j;
+                    distTo[i+1][j] = distTo[i][j]+energy(i+1, j);
+                    edgeTo[i+1][j] = j;
                 }
                 //right down
                 if (j != height()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {
-                    distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);
-                    edgeTo[i+1][j+1]=j;
+                    distTo[i+1][j+1] = distTo[i][j]+energy(i+1, j+1);
+                    edgeTo[i+1][j+1] = j;
                 }
             }
         }
@@ -114,31 +108,10 @@ public class SeamCarver {
         return seam;
     }
 
-    //     //checking all current's adj update distTo and edgeTo
-    //     private void relaxHorizontal(int i, int j) {
-    //         if (i == 0) distTo[i][j]=energy(i, j);
-    //         //right up
-    //         if (j != 0 && distTo[i+1][j-1] > distTo[i][j]+energy(i+1, j-1)) {
-    //             distTo[i+1][j-1]=distTo[i][j]+energy(i+1, j-1);
-    //             edgeTo[i+1][j-1]=j; 
-    //         }
-    //         //right
-    //         if (distTo[i+1][j] > distTo[i][j]+energy(i+1, j)) {
-    //             distTo[i+1][j]=distTo[i][j]+energy(i+1, j);
-    //             edgeTo[i+1][j]=j;
-    //         }
-    //         //right down
-    //         if (j != height()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {
-    //             distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);
-    //             edgeTo[i+1][j+1]=j;
-    //         }
-    //     }
-
     // sequence of indices for vertical seam O(2HW)
     public int[] findVerticalSeam() {
         int[][] edgeTo = new int[width()][height()];
         double[][] distTo = new double[width()][height()];
-        //init with MAX OR ZERO? O(HW)
         for (int j = 0; j < height(); j++) {
             for (int i = 0; i < width(); i++) {
                 distTo[i][j] = Double.MAX_VALUE;
@@ -149,21 +122,21 @@ public class SeamCarver {
         for (int j = 0; j < height()-1; j++) {
             for (int i = 0; i < width(); i++) {//skip last row
                 //relax current pixel for vertical seam
-                if (j == 0) distTo[i][j]=energy(i, j);
+                if (j == 0) distTo[i][j] = energy(i, j);
                 //down left
-                if (i != 0 && distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {
-                    distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);
-                    edgeTo[i-1][j+1]=i; 
+                if (i != 0 && distTo[i-1][j+1] > distTo[i][j] + energy(i-1, j+1)) {
+                    distTo[i-1][j+1] = distTo[i][j] + energy(i-1, j+1);
+                    edgeTo[i-1][j+1] = i; 
                 }
                 //down
-                if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {
-                    distTo[i][j+1]=distTo[i][j]+energy(i, j+1);
-                    edgeTo[i][j+1]=i;
+                if (distTo[i][j+1] > distTo[i][j] + energy(i, j+1)) {
+                    distTo[i][j+1] = distTo[i][j] + energy(i, j+1);
+                    edgeTo[i][j+1] = i;
                 }
                 //down right
-                if (i != width()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {
-                    distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);
-                    edgeTo[i+1][j+1]=i;
+                if (i != width()-1 && distTo[i+1][j+1] > distTo[i][j] + energy(i+1, j+1)) {
+                    distTo[i+1][j+1] = distTo[i][j] + energy(i+1, j+1);
+                    edgeTo[i+1][j+1] = i;
                 }
             }
         }
@@ -186,31 +159,11 @@ public class SeamCarver {
         return seam;
     }
 
-    //     //checking all current's adj update distTo and edgeTo
-    //     private void relaxVertical(int i, int j) {
-    //         if (j == 0) distTo[i][j]=energy(i, j);
-    //         //down left
-    //         if (i != 0 && distTo[i-1][j+1] > distTo[i][j]+energy(i-1, j+1)) {
-    //             distTo[i-1][j+1]=distTo[i][j]+energy(i-1, j+1);
-    //             edgeTo[i-1][j+1]=i; 
-    //         }
-    //         //down
-    //         if (distTo[i][j+1] > distTo[i][j]+energy(i, j+1)) {
-    //             distTo[i][j+1]=distTo[i][j]+energy(i, j+1);
-    //             edgeTo[i][j+1]=i;
-    //         }
-    //         //down right
-    //         if (i != width()-1 && distTo[i+1][j+1] > distTo[i][j]+energy(i+1, j+1)) {
-    //             distTo[i+1][j+1]=distTo[i][j]+energy(i+1, j+1);
-    //             edgeTo[i+1][j+1]=i;
-    //         }
-    //     }
-
     //print distTo with seam for debug
     private void printDistTo(int[] seam, double[][] distTo) {
         for (int j = 0; j < height(); j++) {
             for (int i = 0; i < width(); i++)
-                if (seam[j]==i) StdOut.printf("%9.0f *", distTo[i][j]);
+                if (seam[j] == i) StdOut.printf("%9.0f *", distTo[i][j]);
                 else StdOut.printf("%9.0f ", distTo[i][j]);
             StdOut.println();
         }
@@ -221,7 +174,7 @@ public class SeamCarver {
     private void printEnergy(int[] seam) {
         for (int j = 0; j < height(); j++) {
             for (int i = 0; i < width(); i++)
-                if (seam[j]==i) StdOut.printf("%9.0f *", this.energy(i, j));
+                if (seam[j] == i) StdOut.printf("%9.0f *", this.energy(i, j));
                 else StdOut.printf("%9.0f ", this.energy(i, j));
             StdOut.println();
         }
