@@ -12,7 +12,7 @@ public class SeamCarver {
     // create a seam carver object based on the given pictur
     public SeamCarver(Picture picture) {
         if (picture == null) throw new java.lang.NullPointerException();
-        this.picture = new Picture(picture);
+        this.picture = picture;
         // save color or picture or no?
         //read about optimaze 
 
@@ -64,7 +64,7 @@ public class SeamCarver {
         return Math.sqrt(x+y); //sqrt is expensive, remove?
     }
 
-    // sequence of indices for horizontal seam
+    // sequence of indices for horizontal seam O(2HW)
     public int[] findHorizontalSeam() {
         //this way save memory?
         edgeTo = new int[width()][height()];
@@ -121,7 +121,7 @@ public class SeamCarver {
         }
     }
 
-    // sequence of indices for vertical seam
+    // sequence of indices for vertical seam O(2HW)
     public int[] findVerticalSeam() {
         //this way save memory?
         edgeTo = new int[width()][height()];
@@ -200,28 +200,15 @@ public class SeamCarver {
         StdOut.println();
     }
 
-    //update array of energy every time after removal
-    private void updateEnergy() {
-        //not to calcuatle unchanged energy
-        //need?
-    }
-
-    //test seam for illegal argument exception
-    private boolean isValidSeam(int[] seam, int length) {
-        if (seam.length != length) return false; // wrong length
-        for (int i = 1; i < seam.length; i++) {// 2 adj differ by more than 1 
-            if (Math.abs(seam[i-1]-seam[i]) > 1) return false;
-        }
-        if (length <= 1) return false; // picture length is less or equal 1
-
-        return true;
-    }
-
-    // remove horizontal seam from current picture
+    // remove horizontal seam from current picture O(HW)
     public void removeHorizontalSeam(int[] seam) {
         if (seam == null) throw new java.lang.NullPointerException();
-        if (!isValidSeam(seam, width())) throw new java.lang.IllegalArgumentException();
-        
+        if (seam.length != width()) throw new java.lang.IllegalArgumentException();
+        for (int i = 1; i < seam.length; i++) {// 2 adj differ by more than 1 
+            if (Math.abs(seam[i-1]-seam[i]) > 1) throw new java.lang.IllegalArgumentException();
+        }
+        if (height() <= 1) throw new java.lang.IllegalArgumentException();
+
         Picture pic = new Picture(width(), height()-1);
         for (int i = 0; i < width(); i++) {
             for (int j = 0, k = 0; j < height(); j++) {
@@ -237,8 +224,12 @@ public class SeamCarver {
     // remove vertical seam from current picture
     public void removeVerticalSeam(int[] seam) {
         if (seam == null) throw new java.lang.NullPointerException();
-        if (!isValidSeam(seam, height())) throw new java.lang.IllegalArgumentException();
-        
+        if (seam.length != height()) throw new java.lang.IllegalArgumentException();
+        for (int i = 1; i < seam.length; i++) {// 2 adj differ by more than 1 
+            if (Math.abs(seam[i-1]-seam[i]) > 1) throw new java.lang.IllegalArgumentException();
+        }
+        if (width() <= 1) throw new java.lang.IllegalArgumentException();
+
         Picture pic = new Picture(width() - 1, height());
         for (int i = 0; i < height(); i++) {
             for (int j = 0, k = 0; j < width(); j++) {
