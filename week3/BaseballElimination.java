@@ -7,10 +7,10 @@ public class BaseballElimination
 {
     private final int numberOfTeams;
     private HashMap<String, Integer> teams;
-    private int w[]; 
-    private int l[];
-    private int r[];
-    private int g[][];
+    private int[] w;
+    private int[] l;
+    private int[] r;
+    private int[][] g;
 
     // create a baseball division from given filename in format specified belo
     public BaseballElimination(String filename)
@@ -29,7 +29,7 @@ public class BaseballElimination
             l[i] = in.readInt();
             r[i] = in.readInt();
             for (int j = 0; j < numberOfTeams; j++) {
-                if (i != j) g[i][j] = in.readInt();
+                g[i][j] = in.readInt();
             }
         }
     }
