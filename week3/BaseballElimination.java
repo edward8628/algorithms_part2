@@ -1,6 +1,9 @@
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.FlowEdge;
+import edu.princeton.cs.algs4.FlowNetwork;
+import edu.princeton.cs.algs4.FordFulkerson;
 import java.util.HashMap;
 
 public class BaseballElimination
@@ -73,6 +76,33 @@ public class BaseballElimination
     // is given team eliminated?
     public boolean isEliminated(String team)
     {
+        int s = -1;
+        int t = -2;
+
+        FlowNetwork fn = new FlowNetwork(numberOfTeams*numberOfTeams + 2); //wrong vertex
+
+        //s to games
+        for (int i = 0; i < numberOfTeams; i++) {
+            for (int j = 0; j < numberOfTeams; j++) { //what is w? how to skip none
+                //FlowEdge()//v, w, capacity or v, w, capacity, flow
+                fn.addEdge(new FlowEdge(s, ??, g[i][j]));
+            } 
+        }
+
+        //games to teams
+        for (int i = 0; i < numberOfTeams; i++) {
+            fn.addEdge(new FlowEdge(??, ??, ??, Double.POSITIVE_INFINITY)); //flow right?
+        }
+
+        //teams to t
+        for (int i = 0; i < numberOfTeams; i++) {
+            //capacity or flow is w[x] + r[x] - w[i]?
+            fn.addEdge(new FlowEdge(??, t, ??));
+        }
+        FordFulkerson ff = new FordFulkerson(fn, s, t);
+
+        //how to find out elimination team? minCut?
+
         return false;
     }
 
@@ -90,7 +120,8 @@ public class BaseballElimination
                 for (String t : division.certificateOfElimination(team)) {
                     StdOut.print(t + " "); 
                 }
-                StdOut.println("}"); }
+                StdOut.println("}"); 
+            }
             else {
                 StdOut.println(team + " is not eliminated");
             }
