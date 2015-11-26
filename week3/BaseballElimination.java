@@ -10,6 +10,7 @@ public class BaseballElimination
 {
     private final int numberOfTeams;
     private HashMap<String, Integer> teams;
+    private String[] teamName;
     private int[] w;
     private int[] l;
     private int[] r;
@@ -21,13 +22,15 @@ public class BaseballElimination
         In in = new In(filename);
         numberOfTeams = in.readInt();
         teams = new HashMap<String, Integer>();
+        teamName = new String[numberOfTeams];
         w = new int[numberOfTeams];
         l = new int[numberOfTeams];
         r = new int[numberOfTeams];
         g = new int[numberOfTeams][numberOfTeams];
 
         for (int i = 0; i < numberOfTeams; i++) {
-            teams.put(in.readString(), i);
+            teamName[i] = in.readString();
+            teams.put(teamName[i], i);
             w[i] = in.readInt();
             l[i] = in.readInt();
             r[i] = in.readInt();
@@ -76,31 +79,32 @@ public class BaseballElimination
     // is given team eliminated?
     public boolean isEliminated(String team)
     {
-        int s = -1;
-        int t = -2;
-
-        FlowNetwork fn = new FlowNetwork(numberOfTeams*numberOfTeams + 2); //wrong vertex
-
-        //s to games
-        for (int i = 0; i < numberOfTeams; i++) {
-            for (int j = 0; j < numberOfTeams; j++) { //what is w? how to skip none
-                //FlowEdge()//v, w, capacity or v, w, capacity, flow
-                fn.addEdge(new FlowEdge(s, ??, g[i][j]));
-            } 
-        }
+        int teamSquare = numberOfTeams*numberOfTeams;
+        int s = teamSquare;
+        int t = teamSquare + 1;
+        int gameIndex = 0;
+        FlowNetwork fn = new FlowNetwork(teamSquare + 2);
 
         //games to teams
         for (int i = 0; i < numberOfTeams; i++) {
-            fn.addEdge(new FlowEdge(??, ??, ??, Double.POSITIVE_INFINITY)); //flow right?
+            for (int j = 0; j < numberOfTeams; j++) { //game=i*j+j, team1=i, team2=j?
+                if (i != j) {
+                    fn.addEdge(new FlowEdge(s, gameIndex, g[i][j])); //s to games
+                    fn.addEdge(new FlowEdge(gameIndex, i, Double.POSITIVE_INFINITY));//game to team1
+                    fn.addEdge(new FlowEdge(gameIndex, j, Double.POSITIVE_INFINITY));//game to team2
+                    gameIndex++;
+                }
+            }
         }
 
         //teams to t
         for (int i = 0; i < numberOfTeams; i++) {
-            //capacity or flow is w[x] + r[x] - w[i]?
-            fn.addEdge(new FlowEdge(??, t, ??));
+            if (wins(team)+remaining(team)-w[i] < 0) return true; 
+            fn.addEdge(new FlowEdge(i+gameIndex, t, wins(team)+remaining(team)-w[i]));
         }
+        StdOut.println(fn.toString());
         FordFulkerson ff = new FordFulkerson(fn, s, t);
-
+        //Check that a(R) is greater than the maximum number of games the eliminated team can win
         //how to find out elimination team? minCut?
 
         return false;
@@ -109,7 +113,41 @@ public class BaseballElimination
     //subsetRofteamsthateliminatesgiventeam;nullifnoteliminated
     public Iterable<String> certificateOfElimination(String team)
     {
-        return null;
+        int teamSquare = numberOfTeams*numberOfTeams;
+        int s = teamSquare;
+        int t = teamSquare + 1;
+        int gameIndex = 0;
+        FlowNetwork fn = new FlowNetwork(teamSquare + 2);
+
+        //games to teams
+        for (int i = 0; i < numberOfTeams; i++) {
+            for (int j = 0; j < numberOfTeams; j++) { //game=i*j+j, team1=i, team2=j?
+                if (i != j) {
+                    fn.addEdge(new FlowEdge(s, gameIndex, g[i][j])); //s to games
+                    fn.addEdge(new FlowEdge(gameIndex, i, Double.POSITIVE_INFINITY));//game to team1
+                    fn.addEdge(new FlowEdge(gameIndex, j, Double.POSITIVE_INFINITY));//game to team2
+                    gameIndex++;
+                }
+            }
+        }
+
+        //teams to t
+        for (int i = 0; i < numberOfTeams; i++) {
+            if (wins(team)+remaining(team)-w[i] < 0) return new Queue<String>(); 
+            fn.addEdge(new FlowEdge(i+gameIndex, t, wins(team)+remaining(team)-w[i]));
+        }
+        StdOut.println(fn.toString());
+        FordFulkerson ff = new FordFulkerson(fn, s, t);
+        //Check that a(R) is greater than the maximum number of games the eliminated team can win
+        //how to find out elimination team? minCut?
+
+        Queue<String> result = new Queue<String>();
+        for (int i = 0; i < numberOfTeams; i++) {
+            if(ff.inCut(i)) {
+                result.enqueue(teamName[i]);
+            } 
+        }
+        return result;
     }
 
     public static void main(String[] args) {
