@@ -96,14 +96,14 @@ public class BaseballElimination
             if (wins(team)+remaining(team)-w[i] < 0) {
                 return true;
             }
-            //if (team.equals(teamName[i])) continue;
+            if (team.equals(teamName[i])) continue;
             fn.addEdge(new FlowEdge(i, t, wins(team)+remaining(team)-w[i]));//teams to t
         }
 
         //games to teams
         for (int i = 0; i < numberOfTeams; i++) {
-            for (int j = 0; j < numberOfTeams; j++) {
-                if (i != j) {
+            for (int j = i+1; j < numberOfTeams; j++) {
+                if (j != teams.get(team)) {
                     maxCapacity += g[i][j];
                     fn.addEdge(new FlowEdge(s, gameIndex+numberOfTeams, g[i][j])); //s to games
                     fn.addEdge(new FlowEdge(gameIndex+numberOfTeams, i, Double.POSITIVE_INFINITY));//game to team1
@@ -112,8 +112,8 @@ public class BaseballElimination
                 }
             }
         }
-        StdOut.println(fn.toString());
         FordFulkerson ff = new FordFulkerson(fn, s, t);
+        StdOut.println(fn.toString());
 
         StdOut.println("ff " + ff.value() + " " +maxCapacity);
         if (ff.value() < maxCapacity) {
@@ -122,7 +122,6 @@ public class BaseballElimination
         return false;
     }
 
-    //subsetRofteamsthateliminatesgiventeam;nullifnoteliminated
     public Iterable<String> certificateOfElimination(String team)
     {
         if (!teams.containsKey(team)) throw new java.lang.IllegalArgumentException();
@@ -132,6 +131,8 @@ public class BaseballElimination
         int gameIndex = 0;
         Queue<String> eliminatedTeams = new Queue<String>();
         FlowNetwork fn = new FlowNetwork(teamSquare + 2);
+
+        //fix this after isEl
 
         //games to teams
         for (int i = 0; i < numberOfTeams; i++) {
@@ -168,6 +169,17 @@ public class BaseballElimination
     }
 
     public static void main(String[] args) {
+        // % java BaseballElimination teams4.txt
+        // Atlanta is not eliminated
+        // Philadelphia is eliminated by the subset R = { Atlanta New_York } 
+        // New_York is not eliminated
+        // Montreal is eliminated by the subset R = { Atlanta }
+        // % java BaseballElimination teams5.txt 
+        // New_York is not eliminated
+        // Baltimore is not eliminated
+        // Boston is not eliminated
+        // Toronto is not eliminated
+        // Detroit is eliminated by the subset R = { New_York Baltimore Boston Toronto }
         BaseballElimination division = new BaseballElimination(args[0]); 
         for (String team : division.teams()) {
             if (division.isEliminated(team)) {
@@ -181,17 +193,5 @@ public class BaseballElimination
                 StdOut.println(team + " is not eliminated");
             }
         }
-
-        // % java BaseballElimination teams4.txt
-        // Atlanta is not eliminated
-        // Philadelphia is eliminated by the subset R = { Atlanta New_York } 
-        // New_York is not eliminated
-        // Montreal is eliminated by the subset R = { Atlanta }
-        // % java BaseballElimination teams5.txt 
-        // New_York is not eliminated
-        // Baltimore is not eliminated
-        // Boston is not eliminated
-        // Toronto is not eliminated
-        // Detroit is eliminated by the subset R = { New_York Baltimore Boston Toronto }
     }
 }
