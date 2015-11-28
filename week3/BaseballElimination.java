@@ -103,7 +103,7 @@ public class BaseballElimination
         //games to teams
         for (int i = 0; i < numberOfTeams; i++) {
             for (int j = i+1; j < numberOfTeams; j++) {
-                if (j != teams.get(team)) {
+                if (j != teams.get(team) && i != teams.get(team)) {
                     maxCapacity += g[i][j];
                     fn.addEdge(new FlowEdge(s, gameIndex+numberOfTeams, g[i][j])); //s to games
                     fn.addEdge(new FlowEdge(gameIndex+numberOfTeams, i, Double.POSITIVE_INFINITY));//game to team1
@@ -114,7 +114,7 @@ public class BaseballElimination
         }
         FordFulkerson ff = new FordFulkerson(fn, s, t);
         //StdOut.println(fn.toString());
-        //StdOut.println("ff " + ff.value() + " " +maxCapacity);
+        //StdOut.println("value: " + ff.value() + " max capacity: " +maxCapacity);
         
         if (ff.value() < maxCapacity) {
             return true;
@@ -148,7 +148,7 @@ public class BaseballElimination
         //games to teams
         for (int i = 0; i < numberOfTeams; i++) {
             for (int j = i+1; j < numberOfTeams; j++) {
-                if (j != teams.get(team)) {
+                if (j != teams.get(team) && i != teams.get(team)) {
                     maxCapacity += g[i][j];
                     fn.addEdge(new FlowEdge(s, gameIndex+numberOfTeams, g[i][j])); //s to games
                     fn.addEdge(new FlowEdge(gameIndex+numberOfTeams, i, Double.POSITIVE_INFINITY));//game to team1
@@ -161,10 +161,11 @@ public class BaseballElimination
 
         Queue<String> result = new Queue<String>();
         for (int i = 0; i < numberOfTeams; i++) {
-            if (ff.inCut(i)) {
+            if (ff.inCut(i) && i != teams.get(team)) {
                 result.enqueue(teamName[i]);
             }
         }
+        if (result.size() == 0) return null;
         return result;
     }
 
