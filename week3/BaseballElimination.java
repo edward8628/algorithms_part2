@@ -113,9 +113,9 @@ public class BaseballElimination
             }
         }
         FordFulkerson ff = new FordFulkerson(fn, s, t);
-        StdOut.println(fn.toString());
-
-        StdOut.println("ff " + ff.value() + " " +maxCapacity);
+        //StdOut.println(fn.toString());
+        //StdOut.println("ff " + ff.value() + " " +maxCapacity);
+        
         if (ff.value() < maxCapacity) {
             return true;
         }
@@ -129,39 +129,39 @@ public class BaseballElimination
         int s = teamSquare;
         int t = teamSquare + 1;
         int gameIndex = 0;
+        double maxCapacity = 0;
         Queue<String> eliminatedTeams = new Queue<String>();
         FlowNetwork fn = new FlowNetwork(teamSquare + 2);
 
-        //fix this after isEl
-
-        //games to teams
-        for (int i = 0; i < numberOfTeams; i++) {
-            for (int j = 0; j < numberOfTeams; j++) { //game=i*j+j, team1=i, team2=j?
-                if (i != j) {
-                    fn.addEdge(new FlowEdge(s, gameIndex, g[i][j])); //s to games
-                    fn.addEdge(new FlowEdge(gameIndex, i, Double.POSITIVE_INFINITY));//game to team1
-                    fn.addEdge(new FlowEdge(gameIndex, j, Double.POSITIVE_INFINITY));//game to team2
-                    gameIndex++;
-                }
-            }
-        }
-
-        //teams to t
         for (int i = 0; i < numberOfTeams; i++) {
             if (wins(team)+remaining(team)-w[i] < 0) {
                 eliminatedTeams.enqueue(teamName[i]);
                 continue;
             }
-            fn.addEdge(new FlowEdge(i+gameIndex, t, wins(team)+remaining(team)-w[i]));
+            if (team.equals(teamName[i])) continue;
+            fn.addEdge(new FlowEdge(i, t, wins(team)+remaining(team)-w[i]));//teams to t
         }
         if (eliminatedTeams.size() > 0) {
             return eliminatedTeams;
+        }
+
+        //games to teams
+        for (int i = 0; i < numberOfTeams; i++) {
+            for (int j = i+1; j < numberOfTeams; j++) {
+                if (j != teams.get(team)) {
+                    maxCapacity += g[i][j];
+                    fn.addEdge(new FlowEdge(s, gameIndex+numberOfTeams, g[i][j])); //s to games
+                    fn.addEdge(new FlowEdge(gameIndex+numberOfTeams, i, Double.POSITIVE_INFINITY));//game to team1
+                    fn.addEdge(new FlowEdge(gameIndex+numberOfTeams, j, Double.POSITIVE_INFINITY));//game to team2
+                    gameIndex++;
+                }
+            }
         }
         FordFulkerson ff = new FordFulkerson(fn, s, t);
 
         Queue<String> result = new Queue<String>();
         for (int i = 0; i < numberOfTeams; i++) {
-            if(ff.inCut(i+gameIndex)) {
+            if (ff.inCut(i)) {
                 result.enqueue(teamName[i]);
             }
         }
@@ -174,12 +174,14 @@ public class BaseballElimination
         // Philadelphia is eliminated by the subset R = { Atlanta New_York } 
         // New_York is not eliminated
         // Montreal is eliminated by the subset R = { Atlanta }
+        //
         // % java BaseballElimination teams5.txt 
         // New_York is not eliminated
         // Baltimore is not eliminated
         // Boston is not eliminated
         // Toronto is not eliminated
         // Detroit is eliminated by the subset R = { New_York Baltimore Boston Toronto }
+
         BaseballElimination division = new BaseballElimination(args[0]); 
         for (String team : division.teams()) {
             if (division.isEliminated(team)) {
