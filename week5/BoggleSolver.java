@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.TrieSET;
 import edu.princeton.cs.algs4.SET;
 //https://github.com/vinsonlee/coursera/blob/master/algs4partII-004/boggle/BoggleSolver.java
@@ -29,8 +28,7 @@ public class BoggleSolver {
             }
         }
 
-        //collect valid words
-        return null;
+        return validWords;
     }
 
     private void explore(BoggleBoard board, int row, int col, boolean[][] marked, String prefix, SET<String> set) {
@@ -57,6 +55,7 @@ public class BoggleSolver {
         }
         marked[row][col] = true;
 
+        //collect valid words
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i == 0 && j == 0) {
