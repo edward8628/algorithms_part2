@@ -46,9 +46,9 @@ public class BoggleSolver {
             word += letter;
         }
         //check if this word has prefix in our dict to save time
-        if (this.dict.longestPrefixOf(word) ==  null) {
-            return;
-        }
+        //         if (!this.dict.contains(word)) {
+        //             return;
+        //         }
         //search word if valid in dict
         if (word.length() > 2 && dict.contains(word)) {
             set.add(word);
@@ -92,8 +92,8 @@ public class BoggleSolver {
                 default:
                 return 11;
             }
-        }
-        return 0;
+        } else 
+            return 0;
     }
 
     public static void main(String[] args) {
