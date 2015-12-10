@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.TrieSET;
 import edu.princeton.cs.algs4.SET;
 //https://github.com/vinsonlee/coursera/blob/master/algs4partII-004/boggle/BoggleSolver.java
 
@@ -46,9 +45,9 @@ public class BoggleSolver {
             word += letter;
         }
         //check if this word has prefix in our dict to save time
-        //         if (!this.dict.contains(word)) {
-        //             return;
-        //         }
+        if (!dict.hasPrefix(word)) {
+            return;
+        }
         //search word if valid in dict
         if (word.length() > 2 && dict.contains(word)) {
             set.add(word);
