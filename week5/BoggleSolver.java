@@ -2,9 +2,9 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.SET;
-import edu.princeton.cs.algs4.TST;
 //https://github.com/vinsonlee/coursera/blob/master/algs4partII-004/boggle/BoggleSolver.java
 //https://github.com/lcanet/coursera/blob/master/algs4p2/src/BoggleSolver.java
+
 public class BoggleSolver {
     private final BoggleDictionary dict;
 
@@ -21,6 +21,7 @@ public class BoggleSolver {
             root = put(root, s, s, 0);
         }
 
+        //should use non-recursively to achieve faster 
         private DictionaryNode put(DictionaryNode x, String s, String val, int d) {
             char c = s.charAt(d);
             if (x == null) {
@@ -53,6 +54,7 @@ public class BoggleSolver {
             return x.val;
         }
 
+        //should use non-recursively to achieve faster 
         // return subtrie corresponding to given key
         private DictionaryNode get(DictionaryNode x, String key, int d) {
             if (x == null)
@@ -77,7 +79,7 @@ public class BoggleSolver {
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.) 
     public BoggleSolver(String[] dictionary) {
-        StdRandom.shuffle(dictionary);
+        //StdRandom.shuffle(dictionary);
         this.dict = new BoggleDictionary();
         for (String word : dictionary) {
             this.dict.add(word);
@@ -89,6 +91,7 @@ public class BoggleSolver {
         if (board == null) throw new java.lang.NullPointerException();
         SET<String> validWords = new SET<String>();
 
+        //should use non-recursively to achieve faster 
         //run through board
         for (int i = 0; i < board.rows(); i++) {
             for (int j = 0; j < board.cols(); j++) {
