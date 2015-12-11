@@ -4,7 +4,7 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.TST;
 //https://github.com/vinsonlee/coursera/blob/master/algs4partII-004/boggle/BoggleSolver.java
-
+//https://github.com/lcanet/coursera/blob/master/algs4p2/src/BoggleSolver.java
 public class BoggleSolver {
     private final BoggleDictionary dict;
 
