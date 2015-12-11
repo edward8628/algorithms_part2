@@ -1,14 +1,84 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.TST;
 //https://github.com/vinsonlee/coursera/blob/master/algs4partII-004/boggle/BoggleSolver.java
 
 public class BoggleSolver {
-    private TrieSET dict;
+    private final BoggleDictionary dict;
+
+    private class DictionaryNode {
+        private char c; // character
+        private DictionaryNode left, mid, right; // left, middle, and right subtries
+        private String val; // value associated with string
+    }
+
+    private class BoggleDictionary {
+        private DictionaryNode root;
+
+        public void add(String s) {
+            root = put(root, s, s, 0);
+        }
+
+        private DictionaryNode put(DictionaryNode x, String s, String val, int d) {
+            char c = s.charAt(d);
+            if (x == null) {
+                x = new DictionaryNode();
+                x.c = c;
+            }
+            if (c < x.c)
+                x.left = put(x.left, s, val, d);
+            else if (c > x.c)
+                x.right = put(x.right, s, val, d);
+            else if (d < s.length() - 1)
+                x.mid = put(x.mid, s, val, d + 1);
+            else
+                x.val = val;
+            return x;
+        }
+
+        private boolean contains(String key) {
+            return get(key) != null;
+        }
+
+        private String get(String key) {
+            if (key == null)
+                throw new NullPointerException();
+            if (key.length() == 0)
+                throw new IllegalArgumentException("key must have length >= 1");
+            DictionaryNode x = get(root, key, 0);
+            if (x == null)
+                return null;
+            return x.val;
+        }
+
+        // return subtrie corresponding to given key
+        private DictionaryNode get(DictionaryNode x, String key, int d) {
+            if (x == null)
+                return null;
+            char c = key.charAt(d);
+            if (c < x.c)
+                return get(x.left, key, d);
+            else if (c > x.c)
+                return get(x.right, key, d);
+            else if (d < key.length() - 1)
+                return get(x.mid, key, d + 1);
+            else
+                return x;
+        }
+
+        public boolean hasPrefix(String query) {
+            DictionaryNode x = get(root, query, 0);
+            return x != null;
+        }
+    }
+
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.) 
     public BoggleSolver(String[] dictionary) {
-        this.dict = new TrieSET();
+        StdRandom.shuffle(dictionary);
+        this.dict = new BoggleDictionary();
         for (String word : dictionary) {
             this.dict.add(word);
         }
